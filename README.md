@@ -4,7 +4,7 @@
 [![Nightly Builds](http://img.shields.io/badge/10.0-nightly-875A7B.svg?style=flat)](http://nightly.odoo.com/)
 
 Odoo
-----
+-----
 
 Odoo is a suite of web based open source business apps.
 
