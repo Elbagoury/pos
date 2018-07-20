@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_change_tank_quantity" model="ir.ui.view">
+            <field name="name">Change Tank Quantity</field>
+            <field name="model">stock.change.tank.qty</field>
+            <field name="arch" type="xml">
+                <form string="Update Tank Quantity">
+                    <group>
+                        <field name="product_tmpl_id" invisible="1"/>
+                        <field name="product_variant_count" invisible="1"/>
+                        <field name="product_id" widget="selection"
+                            domain="[('product_tmpl_id', '=', product_tmpl_id)]"
+                            attrs="{'readonly': [('product_variant_count', '=', 1)]}"/>
+                        <field name="tank_id" domain="[('tank_type', '=', product_id)]"/>
+                        <field name="new_quantity"/>
+                    </group>
+                    <footer>
+                        <button name="change_tank_qty" string="_Apply" type="object" class="btn-primary"/>
+                        <button string="_Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_change_tank_quantity" model="ir.actions.act_window">
+            <field name="name">Update Tank Quantity</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.change.tank.qty</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_change_tank_quantity"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
+

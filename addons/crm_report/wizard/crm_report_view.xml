@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="crm_report_form" model="ir.ui.view">
+            <field name="name">view.crm.report</field>
+            <field name="model">crm.won.lost.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="CRM Report" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="start_date"/>
+							<field name="stage_id" options='{"no_open": True, "no_create": True}'/>
+						</group>	
+						<group>
+							<field name="end_date"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="CRM Report Details">
+							<field name="crm_line_ids" nolabel="1" readonly="1">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="sales_person_id"/>
+                					<field name="lead_id"/>
+                					<field name="revenue" widget="monetary"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<group class="oe_subtotal_footer oe_right" colspan="2" name="total">
+						<field name="total" nolabel="1" class="oe_subtotal_footer_separator" readonly="1"/>
+					</group>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_crm_report" model="ir.actions.act_window">
+            <field name="name">CRM Report</field>
+            <field name="res_model">crm.won.lost.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="crm_report_form"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_crm_report" id="menu_crm_report"
+            parent="sales_team.menu_sale_report" sequence="6"/>
+            
+</odoo> 

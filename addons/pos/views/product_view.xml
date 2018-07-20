@@ -1,0 +1,128 @@
+<odoo>
+	<record id="product_product_view_form_easy_inherit_pump" model="ir.ui.view">
+		<field name="name">product.product.view.form.easy.inherit.pump</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+			<data>
+				<header position="inside">
+					<button name="%(action_view_change_tank_quantity)d" string="Update Qty On Tank" type="action" attrs="{'invisible': [('type', '!=', 'product')]}"/>
+                </header>
+            </data>
+        </field>
+	</record>
+	
+	
+	 <!-- view used for product.template only -->
+	<record model="ir.ui.view" id="product_template_pump_form_view_procurement_button">
+		<field name="name">product.template_pump_procurement</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+			<data>
+				<header position="inside" >
+					<button name="%(action_view_change_tank_quantity)d" string="Update Qty On Tank" type="action" attrs="{'invisible': [('type', '!=', 'product')]}"/>
+                </header>
+            </data>
+        </field>
+	</record>
+ 
+	<record id="product_template_form_inherit" model="ir.ui.view">
+		<field name="name">product.template.form.view.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+			<xpath expr="/form/sheet/notebook/page[1]/group/group[2]/div" position="after">
+				<label for="unit_cost" string="UnitCost(without vat 20%)"/>
+				 <div>
+					<label string="20% of" class="oe_inline"/><field name="unit_cost" class="oe_inline"/>
+                    
+                </div>
+				<field name="rrp" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+			</xpath>
+			<xpath expr="/form/sheet/notebook/page[1]/group/group[2]" position="after">
+				<group>
+					<field name="pack_size"/>
+					
+					<field name="product_code"/>
+					<field name="brand_id"/>
+				</group>
+				<group>
+					<field name="pack_cost"/>
+					<field name="on_hand_qty"/>
+					<field name="margin"/>
+					<field name="actual_margin"/>
+					<field name="required_margin"/>
+				</group>
+			</xpath>
+			
+			<xpath expr="/form/sheet/div[2]/div/div[2]" position="after">
+				<div name="options" groups="base.group_user">
+					<div>
+						<field name="reconcilation"/>
+						<label for="reconcilation"/>
+					</div>
+					<div>
+						<field name="token"/>
+						<label for="token"/>
+					</div>
+                </div>
+			</xpath>
+            
+        </field>
+    </record>
+    
+    <!--Pos Category Inherit -->
+    
+      <record id="product_pos_category_form_view_inherit" model="ir.ui.view">
+        <field name="name">pos.category.form.inherit</field>
+        <field name="model">pos.category</field>
+        <field name="inherit_id" ref="point_of_sale.product_pos_category_form_view"/>
+        <field name="arch" type="xml">
+			<field name="sequence" position="after">
+				<field name="required_margin"/>
+			</field>
+		</field>
+	</record>
+	
+	<!--Purchase Order Inherit -->
+
+	<record id="purchase_order_form_inherit" model="ir.ui.view">
+		<field name="name">purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+			<field name="partner_ref" position="after">
+				<field name="sales"/>
+				<field name="picker"/>
+			</field>
+					
+		<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="before">
+			<field name="sku"/>
+		</xpath>
+		
+	<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+			<field name="srp"/>
+			<field name="por"/>
+		</xpath>
+		<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='date_planned']" position="attributes">
+			<attribute name="invisible">1</attribute>
+		</xpath>
+		<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='qty_received']" position="attributes">
+			<attribute name="invisible">1</attribute>
+		</xpath>
+		<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='qty_invoiced']" position="attributes">
+			<attribute name="invisible">1</attribute>
+		</xpath>
+		<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="replace">
+			<field name="price_subtotal" string="Line Price" widget="monetary"/>
+		</xpath>
+		<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='taxes_id']" position="replace">
+			<field name="taxes_id" string="vat" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase'}"/>
+		</xpath>
+		</field>
+	</record>
+
+
+	
+</odoo>

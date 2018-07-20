@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_payment_report" model="ir.ui.view">
+		<field name="name">view.payment.report</field>
+        <field name="model">payment.report</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Payment Summary" create="false" edit="false" >
+				<group>
+					<group>
+						<field name="date"/>
+						<field name="day_shift"/>
+						<field name="shift_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('day_shift','!=', 'shift')]}"/>
+					</group>	
+				</group>
+                <newline/>
+                <notebook>
+					<page string="Payment Summary">
+						<field name="payment_ids" nolabel="1">
+							<tree create="false" edit="false" delete="false">	
+								<field name="journal_id"/>
+                				<field name="total"/>
+                			</tree> 
+						</field>
+                	</page>                	
+                </notebook>
+               	<footer>
+					<button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_payment_report" model="ir.actions.act_window">
+		<field name="name">Payments Summary</field>
+        <field name="res_model">payment.report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="view_payment_report"/>
+        <field name="target">new</field>
+	</record>
+        
+        <menuitem action="action_payment_report" id="menu_payment_report"
+            parent="reconciliations_menu" sequence="8"/>
+</odoo>

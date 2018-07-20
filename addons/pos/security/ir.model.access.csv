@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_template_pos_group_ho,access.product.template.pos.group.ho,product.model_product_template,pos_group_ho,1,1,1,0
+access_product_template_pos_group_forecourt1,access.product.template.pos.group.forecourt1,product.model_product_template,pos_group_forecourt1,1,0,0,0
+access_product_template_pos_group_forecourt2,access.product.template.pos.group.forecourt2,product.model_product_template,pos_group_forecourt2,1,0,0,0
+access_product_product_pos_group_ho,access.product.product.pos.group.ho,product.model_product_product,pos_group_ho,1,1,1,1
+access_product_product_pos_group_forecourt1,access.product.product.pos.group.forecourt1,product.model_product_product,pos_group_forecourt1,1,0,0,0
+access_product_product_pos_group_forecourt2,access.product.product.pos.group.forecourt2,product.model_product_product,pos_group_forecourt2,1,0,0,0
+access_product_uom_pos_group_forecourt1,access.product.uom.pos.group.forecourt1,product.model_product_uom,pos_group_forecourt1,1,0,0,0
+access_product_uom_pos_group_forecourt2,access.product.uom.pos.group.forecourt2,product.model_product_uom,pos_group_forecourt2,1,0,0,0
+access_product_uom_pos_group_ho,access.product.uom.pos.group.ho,product.model_product_uom,pos_group_ho,1,1,1,0

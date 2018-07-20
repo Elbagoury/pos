@@ -1,0 +1,52 @@
+<odoo>
+    	
+    	<record id="view_cash_drop_report" model="ir.ui.view">
+            <field name="name">view.cash.drop.report</field>
+            <field name="model">cash.drop.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Operator Monitor" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="date"/>
+							<field name="day_shift"/>
+						</group>	
+						<group>
+							<field name="shift_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('day_shift','!=', 'shift')]}"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Cash Drops Details">
+							<field name="cash_drop_ids" nolabel="1">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="time"/>
+                					<field name="receipt_number"/>
+                					<field name="value"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<group class="oe_subtotal_footer oe_right" colspan="2" name="overall_total">
+						<field name="overall_total" nolabel="1" class="oe_subtotal_footer_separator" readonly="1"/>
+					</group>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_cash_drop_report" model="ir.actions.act_window">
+            <field name="name">Cash Drops</field>
+            <field name="res_model">cash.drop.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_cash_drop_report"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_cash_drop_report" id="menu_cash_drop_report"
+            parent="reconciliations_menu" sequence="9"/>
+            
+</odoo> 

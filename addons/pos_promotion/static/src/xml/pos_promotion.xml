@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="button_promotion">
+        <button class="control-button btn btn-fill btn-wd">
+            <i class='fa fa-gift' /> Add Promotions
+        </button>
+    </t>
+
+    <t t-extend="Orderline">
+        <t t-jquery=".info-list" t-operation="after">
+            <t t-if="line.promotion">
+                <ul class="promotion-item">
+                    <li class="info">
+                        <i class="fa fa-caret-right"/>
+                        <t t-esc="line.promotion_reason"/>
+                    </li>
+                </ul>
+
+            </t>
+        </t>
+    </t>
+
+    <t t-extend="OrderWidget">
+        <t t-jquery=".summary:first" t-operation="after">
+            <t t-if="widget.pos.config.promotion == true">
+                <div class="promotion clearfix" style="float:right; margin-right:15px">
+                    <div class="line">
+                        <div class='entry total'>
+                            <div class='subentry'>Promotion total :  <span class="value promotion_amount"> $ </span> </div>
+                        </div>
+                    </div>
+                </div>
+             </t>
+        </t>
+    </t>
+
+    <t t-extend="XmlReceipt">
+        <t t-jquery=".total" t-operation="before">
+            <t t-if="pos.config.promotion == true">
+                <line class='total' size='double-height'>
+                    <left><pre>        PROMOTION</pre></left>
+                    <right><value><t t-esc='receipt.promotion_amount || 0.00' /></value></right>
+                </line>
+                <br/>
+                <line><right>--------</right></line>
+            </t>
+        </t>
+    </t>
+
+</templates>

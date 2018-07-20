@@ -1,0 +1,491 @@
+<odoo>
+	<record id="view_employee_form_inherit" model="ir.ui.view">
+		<field name="name">hr.employee.form.inherit</field>
+		<field name="model">hr.employee</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="hr.view_employee_form"/>
+		<field name="arch" type="xml">
+            <xpath expr="//field[@name='category_ids']" position="replace">
+				<group>
+					 <group>
+                    <field name="cid"/>
+                    <field name="category_id" required="1" options='{"no_open": True}'/>
+                    <field name="category_ids" widget="many2many_tags" options="{'no_create_edit': True}" groups="hr.group_hr_user" string="Category" invisible="1"/>
+                 </group>    
+					<group>
+						<field name="project_id"/>
+						<field name="work_base" required="1"/>
+					</group>
+				</group>
+            </xpath>
+            <xpath expr="//field[@name='department_id']" position="replace">
+				<field name="department_id" required="1" options='{"no_open": True}'/>
+            </xpath>
+            <xpath expr="//field[@name='job_id']" position="replace">
+				<field name="job_id" string="Designation" options='{"no_open": True}'/>
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="replace">
+				<field name="parent_id" invisible="1"/>
+            </xpath>
+			<xpath expr="//field[@name='identification_id']" position="replace">
+				<field name="identification_id" invisible="1"/>
+            </xpath>
+             <xpath expr="//field[@name='identification_id']" position="after">
+				<field name="identity_no"/>
+            </xpath>
+            <xpath expr="//field[@name='coach_id']" position="attributes">
+				<attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='calendar_id']" position="attributes">
+				<attribute name="invisible">1</attribute>
+            </xpath>
+			<xpath expr="/form/sheet/notebook/page[1]/group" position="after">
+				<group>
+					<group string="Present Address">
+						<field name="present_address1" required="1"/>
+						<field name="present_address2"/>
+						<field name="present_zip" required="1"/>
+						<field name="present_city" required="1"/>
+						<field name="present_state_id" required="1" options='{"no_open": True, "no_create": True}'/>
+						<field name="present_address_country_id" required="1" options='{"no_open": True, "no_create": True}'/>
+						<field name="same_as_address"/>
+					</group>
+					<group string="Permanent Address">
+						<field name="permanent_address1"/>
+						<field name="permanent_address2"/>
+						<field name="permanent_zip"/>
+						<field name="permanent_city"/>
+						<field name="permanent_state_id" options='{"no_open": True, "no_create": True}'/>
+						<field name="permanent_address_country_id" options='{"no_open": True, "no_create": True}'/>
+					</group>
+				</group>
+			</xpath> 
+			<field name="birthday" position="after">
+				<field name="birth_place"/>
+			</field>
+			<field name="birthday" position="replace">
+				<field name="birthday" placeholder="Same as mentioned on your PAN"/>
+			</field>
+			<field name="marital" position="after">
+				<field name="parent_name"/>
+			</field>
+			<field name="passport_id" position="after">
+				<field name="passport_attach"/>
+			</field>
+			<field name="identification_id" position="after">
+				<field name="adhaar_no" placeholder="Mandatory" required="1"/>
+				<field name="adhaar_attach"/>
+			</field>
+			<field name="bank_account_id" position="after">
+				<field name="pf_details"/>
+				<field name="insurance_details"/>
+			</field>
+			
+			<xpath expr="/form/sheet/notebook/page[2]" position="attributes">
+					<attribute name="groups">inma.inma_group_admin,inma.inma_group_manager,inma.inma_group_store_in_charge,inma.inma_group_user,inma.inma_group_site_admin_assistant,inma.inma_group_project_assistant,inma.inma_group_accounts_manager,inma.inma_group_project_director</attribute>
+			</xpath>
+			 <xpath expr="/form/sheet/notebook/page[2]/group/group[2]" position="attributes">
+				<attribute name="invisible">1</attribute>
+            </xpath>
+			
+			<xpath expr="/form/sheet/notebook/page[2]/group/group[2]" position="after">
+				<group string="Job Details">
+					<field name="qualification_id" options='{"no_open": True}'/>
+					<field name="job_applied_id" options='{"no_open": True}'/>
+					<field name="job_appointed_id" options='{"no_open": True}'/>
+					<field name="date_of_interview"/>
+					<field name="expected_salary"/>
+					<field name="date_of_appointment" required="1"/>
+					<field name="expired_status" invisible="1"/>
+					<field name="experience"/>
+				</group>
+            </xpath>
+            
+			<xpath expr="/form/sheet/notebook/page[2]">
+				<group string="Medical Records">
+					<group>
+						<field name="height" placeholder="in cm - Mandatory" required="1"/> 
+						<field name="weight" placeholder="in  kgs - Mandatory" required="1"/>
+						<field name="blood_group_id"/>
+					</group>
+					<group>
+						<field name="waist_size" placeholder="Mandatory" required="1"/>
+						<field name="shoe_size" placeholder="Mandatory" required="1"/>
+						<field name="medical_history" placeholder="Mandatory"  required="1"/>
+					</group>
+				</group>
+				<separator string="Experience Details"/> 
+					<field name="hr_past_work_experience_id">
+						<tree editable="bottom">
+							<field name="job_id" options='{"no_open": True}'/>
+							<field name="employer" placeholder="Mandatory" required="1"/>
+							<field name="period_from" placeholder="Mandatory" required="1"/>
+							<field name="period_to" placeholder="Mandatory"  required="1"/>
+							<field name="experience"/>
+							<field name="last_drawn_salary" placeholder="Mandatory" required="1"/>
+						</tree>
+					</field>
+				<separator string="Nominees Details"/> 
+					<field name="nominee_ids">
+						<tree editable="bottom">
+							<field name="name" placeholder="Mandatory"  required="1"/>
+							<field name="relation" placeholder="Mandatory" required="1" options='{"no_open": True}'/>
+							<field name="address"/>
+							<field name="address1"/>
+							<field name="city" placeholder="Mandatory" required="1"/>
+							<field name="pincode"/>
+							<field name="mobile_phone" placeholder="Mandatory"  required="1"/>
+						</tree>
+					</field>
+				<separator string="Emergency Contact Person"/> 
+					<field name="emergency_person_ids">
+						<tree editable="bottom">
+							<field name="name" placeholder="Mandatory" required="1"/>
+							<field name="relation" placeholder="Mandatory" required="1" options='{"no_open": True}'/>
+							<field name="address"/>
+							<field name="address1"/>
+							<field name="city" placeholder="Mandatory" required="1"/>
+							<field name="pincode"/>
+							<field name="mobile_phone" placeholder="Mandatory" required="1"/>
+						</tree>
+					</field>
+					<group string="Terms of Employment">
+						<group>
+							<field name="residential_status"/>
+							<field name="food_provided"/>
+						</group>
+					</group>
+					<group string="After Selection">
+						<group>
+							<field name="original_document"/>
+							<field name="original_document_attach" attrs="{'invisible': [('original_document','!=', True)]}"/>
+							<field name="accomodation_allot"/>
+							<field name="id_card" attrs="{'required':[('expired_status','=', 'expired')], 'invisible':[('expired_status','not in', ('expired','valid'))]}"/>
+							<field name="item_issued_ids" widget="many2many_tags"/>
+						</group>
+					</group>
+					<group>
+						<field name="copies_submitted_ids" string="Copies Submitted Details"> 
+							<tree editable="bottom">
+								<field name="card_name_id" placeholder="Mandatory" required="1" options='{"no_open": True}'/>
+								<field name="attachment"/>
+							</tree>
+						</field>
+					</group>
+			</xpath>
+		</field>
+	</record>
+	
+	<record id="view_partner_form_inherit" model="ir.ui.view">
+		<field name="name">view_partner_form.inherit</field>
+		<field name="model">res.partner</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="base.view_partner_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='city']" position="replace">
+				<field name="city" invisible="1"/>
+			</xpath>
+			<xpath expr="//field[@name='category_id']" position="replace">
+				<field name="category_id" invisible="1"/>
+			</xpath>
+			<xpath expr="//field[@name='city']" position="after">
+				<field name="city_id" placeholder="City" class="o_address_city" options='{"no_open": True}'/>
+			</xpath>
+			<xpath expr="/form/sheet/group/group[2]" position="after">
+                <group attrs="{'invisible': [('supplier','!=', True)]}">
+					<field name="business_structure_id"/>
+					<field name="nature_business_ids" widget="many2many_tags"/>
+					<field name="transport"/>
+                </group>
+                <group>
+					<field name="owner_name"/>
+					<field name="contact_person"/>
+                </group>
+			</xpath>
+			
+			<xpath expr="/form/sheet/notebook/page[1]" position="after">
+<!--
+				<page string="Product Data" attrs="{'invisible': [('supplier','!=', True)]}">
+					<group>
+						<group>
+							<field name="type_of_material_ids" widget="many2many_tags"/>
+							<field name="product_standard"/>
+							<field name="stock_status"  widget="radio"/>
+							<field name="iso_certificate" widget="radio"/>
+						</group>
+						<group>
+							<field name="product_detail_description"/>
+							<field name="location_stock"/>
+							<field name="state_period_of_order" attrs="{'required':[('stock_status','=', 'not_immediate')], 'invisible':[('stock_status','=', 'immediate')]}"/>
+						</group>
+					</group>
+                </page>
+-->
+                        
+                <page string="Company Registration and Taxes Information" attrs="{'invisible': [('supplier','!=', True)]}">
+					<group>
+						<field name="company_registration_no" />
+						<field name="pan_no" />
+						<field name="vat" placeholder="e.g. 12AAAAA1234A1Z3 - Mandatory" attrs="{'required':[('supplier','=', True)]}" string="GSTIN"/>
+						<field name="service_tax_code"/>
+					</group>
+                </page>
+                <page string="Declaration" attrs="{'invisible': [('supplier','!=', True)]}">
+					<group>
+						<field name="declaration"/>
+					</group>
+                </page>
+			</xpath>
+			<xpath expr="/form/sheet/notebook/page[1]" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
+			<xpath expr="/form/sheet/notebook/page[1]/field" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
+			<xpath expr="/form/sheet/notebook/page[5]" position="attributes">
+				<attribute name="groups">inma.inma_group_admin</attribute>
+			</xpath>
+			<xpath expr="/form/sheet/notebook/page[6]" position="attributes">
+				<attribute name="groups">inma.inma_group_admin</attribute>
+			</xpath>
+			<!--<xpath expr="/form/sheet/notebook/page[7]" position="attributes">
+				<attribute name="groups">inma.inma_group_admin</attribute>
+			</xpath>-->
+		</field>
+	</record>
+	
+	<record id="l10n_in_view_partner_form_inherit" model="ir.ui.view">
+		<field name="name">view_partner_form.inherit</field>
+		<field name="model">res.partner</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="l10n_in.l10n_in_view_partner_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='vat']" position="replace">
+				<field name="vat" placeholder="e.g. 12AAAAA1234A1Z3 - Mandatory" attrs="{'invisible':[('supplier','=', True)]}" string="GSTIN"/>
+			</xpath>
+		</field>
+	</record>
+	
+	<record id="view_expired_employee_tree" model="ir.ui.view">
+            <field name="name">hr.expired.employee.tree</field>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <tree string="Employees" decoration-bf="message_needaction==True">
+                    <field name="name"/>
+                    <field name="work_phone"/>
+                    <field name="work_email"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="department_id"/>
+                    <field name="job_id"/>
+                    <field name="parent_id"/>
+                    <field name="coach_id" invisible="1"/>
+                    <field name="message_needaction" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_expired_employee">
+            <field name="name">Expired Employee ID</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_type">form</field>
+            <field name="limit">20</field>
+            <field name="domain">[('expired_status','=','expired')]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_expired_employee_tree"/>   
+        </record>
+        
+        <menuitem id="menu_expired_employee" action="action_expired_employee" parent="hr.menu_hr_root" sequence="5"/>
+        
+        
+        <record model="ir.ui.view" id="product_template_configure">
+        <field name="name">product.template.configure</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+			
+			<xpath expr="/form/sheet/notebook/page[2]" position="before">
+				<page string="Product Configure">
+					<group>
+						<group>
+							<!--<field name="product_type" required="1"/>-->
+							<field name="inma_code_no"/>
+							<field name="is_complaince"/>
+							<field name="rol_in_unit"/>
+							<field name="rol_in_days"/>
+							<field name="lead_time"/>
+						</group>
+						<group>
+							<field name="approved_manufacturer_ids" widget="many2many_tags"/>
+							<field name="complaince_detail" attrs="{'required':[('is_complaince','=', True)], 'invisible': [('is_complaince','!=', True)]}"/>
+							<field name="est_qty_ring"/>
+							<field name="category_ids" widget="many2many_tags"/>
+							<field name="product_type" />
+						</group>
+					</group>
+					<separator string="INMA Vendor"/>
+					<field name="vendor_list_id">
+						<tree editable="bottom">
+							<field name="vendor_id" domain="[('supplier','=', True)]"/>
+						</tree>
+					</field>
+				</page>
+            </xpath>
+            <xpath expr="//field[@name='taxes_id']" position="replace">
+				<field name="taxes_id" widget="many2many_tags" string="Customer GST"/>
+			</xpath>
+			<xpath expr="//field[@name='supplier_taxes_id']" position="replace">
+				<field name="supplier_taxes_id" widget="many2many_tags" string="Vendor GST"/>
+			</xpath>
+        </field>
+    </record>
+	
+	<!-- Res Bank Form Inherit -->
+	<record id="view_res_bank_form_inherit" model="ir.ui.view">
+		<field name="name">view.res.bank.form.inherit</field>
+		<field name="model">res.bank</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="base.view_res_bank_form"/>
+		<field name="arch" type="xml">
+			<field name="bic" position="replace">
+				<field name="bic" string="IFSC Code"/>
+			</field>
+		</field>
+	</record>
+	
+	<!-- Res Partner Bank Form Inherit -->
+	<record id="view_res__partner_bank_form_inherit" model="ir.ui.view">
+		<field name="name">view.res.partner.bank.form.inherit</field>
+		<field name="model">res.partner.bank</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="base.view_partner_bank_form"/>
+		<field name="arch" type="xml">
+			<field name="partner_id" position="after">
+				<field name="category_ids"/>
+			</field>
+		</field>
+	</record>
+	
+
+	<record id="view_res__partner_bank_tree" model="ir.ui.view">
+		<field name="name">view.res.partner.bank.tree.inherit</field>
+		<field name="model">res.partner.bank</field>
+		<field name="type">tree</field>
+		<field name="inherit_id" ref="base.view_partner_bank_form"/>
+		<field name="arch" type="xml">
+
+		        <field name="category_ids"/>
+
+		</field>
+	</record>
+	
+	
+	<!--Purchase Order form view inherit-->
+	
+	<record id="view_purchase_order_form_inherit" model="ir.ui.view">
+		<field name="name">view.purchase.order.form.inherit</field>
+		<field name="model">purchase.order</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="purchase.purchase_order_form"/>
+		<field name="arch" type="xml">
+			<button name="action_view_picking" position="replace">
+				<button name="action_view_picking" string="Status of PO" class="oe_highlight" type="object" attrs="{'invisible': ['|', '|' , ('is_shipped', '=', True), ('state','not in', ('purchase','done')), ('picking_count', '=', 0)]}"/>
+			</button>
+			<button name="action_view_picking" position="after">
+				<button name="print_purchase_order" string="Print Purchase Order" class="oe_highlight" type="object" states="purchase"/>
+			</button>
+			<button name="button_done" position="replace">
+				<button name="button_done" invisible="1"/>
+			</button>
+			<button name="button_unlock" position="replace">
+				<button name="button_unlock" invisible="1"/>
+			</button>
+			<field name="name" position="replace">
+				<field name="name" readonly="1" attrs="{'invisible': [('state','in',('draft','sent','bid'))]}"/>
+			</field>
+			<field name="name" position="after">
+				<field name="rfq_no" readonly="1" attrs="{'invisible': [('state','not in',('draft','sent','bid'))]}"/>
+			</field>
+			<field name="partner_ref" position="after">
+				<field name="srm_id" options='{"no_open": True, "no_create": True}' required="1"/>
+			</field>
+<!--
+			<field name="order_line" position="replace">
+				<field name="order_line" attrs="{'readonly': [('state', 'in', ('purchase', 'cancel'))]}"/>
+			</field>
+-->
+		</field>
+	</record>
+	
+	<!-- Purchase Order tree view inherit-->
+	<record id="view_purchase_order_tree_inherit" model="ir.ui.view">
+		<field name="name">view.purchase.order.tree.inherit</field>
+		<field name="model">purchase.order</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="purchase.purchase_order_tree"/>
+		<field name="arch" type="xml">
+<!--
+			<field name="name" position="replace">
+				<field name="name" string="Reference" attrs="{'invisible': [('state','in',('draft','sent','bid'))]}"/>
+			</field>
+-->
+			<field name="name" position="after">
+				<field name="rfq_no" string="RFQ No"/>
+			</field>
+		</field>
+	</record>
+	
+	
+	<!--hr department inherit -->
+	<record id="view_hr_department_form_inherit" model="ir.ui.view">
+		<field name="name">view.hr.department.form.inherit</field>
+		<field name="model">hr.department</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="hr.view_department_form"/>
+		<field name="arch" type="xml">
+			<field name="manager_id" position="replace">
+				<field name="manager_id" invisible="1"/>
+			</field>
+			<field name="parent_id" position="replace">
+				<field name="parent_id" invisible="1"/>
+			</field>
+		</field>
+	</record>
+	
+	<record id="hr.view_department_tree" model="ir.ui.view">
+            <field name="name">hr.department.tree</field>
+            <field name="model">hr.department</field>
+            <field name="field_parent">child_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Companies">
+                    <field name="display_name"/>
+                </tree>
+            </field>
+        </record>
+        
+    <record id="view_partner_property_form_inherit" model="ir.ui.view">
+		<field name="name">view.partner.property.form.inherit</field>
+		<field name="model">res.partner</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="account.view_partner_property_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//page[@name='accounting']" position="attributes">
+				<attribute name="groups">inma.inma_group_admin</attribute>
+			</xpath>
+		</field>
+	</record>
+	
+	<!--hr.job inherit -->
+	<record id="hr_job_form_inherit" model="ir.ui.view">
+		<field name="name">hr.job.form.inherit</field>
+		<field name="model">hr.job</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="hr.view_hr_job_form"/>
+		<field name="arch" type="xml">
+			<button name="set_open" position="replace">
+				<button name="set_open" string="Stop Recruitment" states="recruit" type="object" groups="base.group_user" invisible="1"/>
+			</button>
+		</field>
+	</record>
+	
+	
+</odoo>

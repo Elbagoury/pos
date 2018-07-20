@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<odoo>
+		<template id="report_purchaseorder_document">
+			<t t-call="report.html_container">
+				<t t-set="data_report_margin_top" t-value="7"/>
+                <t t-set="data_report_margin_bottom" t-value="7"/>
+                   	<t t-foreach="docs" t-as="o">
+						<div class="page">
+							<br/>
+							<br/>
+							<img t-if="o.company_id.logo" t-att-src="'data:image/png;base64,%s' % o.company_id.logo" style="max-height: 75px; margin-left:10px; float: left;"/><strong><p align="center" style="font-size: 30px;">INMA INTERNATIONAL LIMITED </p></strong><p align="center">No.292, Avvai Shanmugam Salai, Gopalapuram, Chennai - 600086.<br/>Tel:044-24320093, 28352257 - TIN No.:33750721068</p>
+							<table class="table table-condensed table-bordered">
+								<tr style="font-size: 12px; font-weight: bold;">
+									<td colspan="5" align="center" style="font-size: 16px; border: 2px solid black;"><strong>PURCHASE ORDER</strong></td>
+								</tr>
+								<tr>
+									<td rowspan="5" colspan="2" align="left" style="font-size: 14px;"><span t-field="o.partner_id.name"/><br/><span t-field="o.partner_id.street"/><br/><span t-field="o.partner_id.street2"/><br/><span t-field="o.partner_id.city"/>-<span t-field="o.partner_id.zip"/><strong></strong></td>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Date:</strong></td>
+									<td colspan="2" align="left" style="font-size: 14px;"><span t-field="o.date_order"/></td>
+								</tr>
+								<tr>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Order No:</strong></td>
+									<td colspan="4" align="left" style="font-size: 14px;"><span t-field="o.name"/></td>
+								</tr>
+								<tr>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Contact Person:</strong></td>
+									<td colspan="4" align="left" style="font-size: 14px;"><span t-field="o.write_uid.partner_id.name"/></td>
+								</tr>
+								<tr>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Ph.No:</strong></td>
+									<td colspan="4" align="left" style="font-size: 14px;"><span t-field="o.write_uid.partner_id.mobile"/></td>
+								</tr>
+								<tr>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Email:</strong></td>
+									<td colspan="4" align="left" style="font-size: 14px;"><span t-field="o.write_uid.partner_id.email"/></td>
+								</tr>
+								<tr>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Ph.No:</strong></td>
+									<td align="left" style="font-size: 14px; width: 2in;"><span t-field="o.partner_id.mobile"/></td>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Head Office</strong></td>
+									<td colspan="2" align="left" style="font-size: 14px;"><span t-field="o.company_id.name"/><br/><span t-field="o.company_id.street"/><br/><span t-field="o.company_id.street2"/>,<span t-field="o.company_id.city"/>-<span t-field="o.company_id.zip"/></td>
+								</tr>
+								<tr>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Email:</strong></td>
+									<td align="left" style="font-size: 14px; width: 2in;"><span t-field="o.partner_id.email"/></td>
+									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in;"><strong>Delivery Address:</strong></td>
+									<td colspan="2" align="left" style="font-size: 14px;"><span t-field="o.company_id.name"/><br/><span t-field="o.company_id.street"/><br/><span t-field="o.company_id.street2"/>,<span t-field="o.company_id.city"/>-<span t-field="o.company_id.zip"/></td>
+								</tr>
+								<tr style="font-size: 14px; font-weight: bold;">
+									<td colspan="2" align="center" style="width: 4in;"><strong>Particulars</strong></td>
+									<td colspan="1" align="center" style="width: 1in;"><strong>Unit</strong></td>
+									<td colspan="1" align="center" style="width: 1.5in;"><strong>Rate in Rs.</strong></td>
+									<td colspan="1" align="center" style="width: 2in;"><strong>Amount in Rs.</strong></td>
+								</tr>
+								<tr t-foreach="o.order_line" t-as="line" style="font-size: 12px;">
+									<td colspan="2" align="left">
+										<span t-field="line.name"/>
+									</td>
+									<td colspan="1" align="center">
+										<span t-field="line.product_qty"/>
+										<span t-field="line.product_uom.name" groups="product.group_uom"/>
+									</td>
+									<td colspan="1" align="right">
+										<span t-field="line.price_unit"/>
+									</td>
+									<td colspan="1" align="right">
+										<span t-field="line.price_subtotal"
+											t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+									</td>
+								</tr>
+								<tr style="font-size: 14px; font-weight: bold;">
+									<td colspan="2" align="center"><strong>Total Amount</strong></td>
+									<td colspan="1"></td>
+									<td colspan="1"></td>
+									<td colspan="1" align="right">
+										<span t-field="o.amount_total"
+											t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+									</td>
+								</tr>
+							</table>
+							<p>Terms and Conditions:</p><br/>
+							<p align="left"><span t-field="o.notes"/></p><br/>
+							<p style="font-size: 16px; font-weight: bold;">For INMA International Limited</p><br/><br/><br/>
+							<p style="font-size: 12px; font-weight: bold;">Authorized Signatory</p>
+						</div>
+					</t>
+			</t>
+		</template>
+	</odoo>
+

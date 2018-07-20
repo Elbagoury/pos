@@ -1,0 +1,610 @@
+<odoo>
+	<record id="concrete_planning_form" model="ir.ui.view">
+		<field name="name">concrete.planning.form</field>
+        <field name="model">concrete.planning</field>
+		<field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Concrete Planning Schedule(Add Shift)" delete="0" create="0">
+				<header>
+					<button name="button_done" type="object" string="Confirm" class="oe_highlight" attrs="{'invisible': [('concrete_plan_state', '=', 'done')]}"/>
+					<button name="button_reset" type="object" string="Reset" class="oe_highlight" attrs="{'invisible': [('concrete_plan_state', '!=', 'done')]}"/>
+					<button name="concrete_schedule_report" type="object" string="Print" class="oe_highlight" attrs="{'invisible': [('concrete_plan_state', '!=', 'done')]}"/>
+					<field name="concrete_plan_state" widget="statusbar" statusbar_visible="progress,done," class="oe_highlight"/>
+				</header>
+				<group>
+					<field name="plan_date" readonly="1"/>
+					<field name="name" required="1" />
+					<field name="ring_count" required="1"/>
+				</group>
+				<notebook>
+					<page string="Concrete Planning Schedule">
+						<field name="concrete_planning_schedule_ids" attrs="{'readonly': [('concrete_plan_state', '=', 'done')]}">
+							<tree string="Concrete Planning Schedule" editable="bottom" delete="0" create="0">
+								<field name="s_no" readonly="1"/>
+								<field name="rfi_no"/>
+								<field name="ring_id" readonly="1"/>
+								<field name="mould_id" options='{"no_open": True,"no_create": True}' required="1"/>
+								<field name="segment_id" domain="[('product_type','=','segment')]" options='{"no_open": True,"no_create": True}' widget="many2many_tags"/>
+								<field name="primary_demoulding_time"/>
+								<field name="cage_fixing_start_time" widget="float_time"/>
+								<field name="cage_fixing_end_time" widget="float_time"/>
+								<field name="concrete_start_time" widget="float_time"/>
+								<field name="concrete_end_time" widget="float_time"/>
+								<field name="finishing" widget="float_time"/>
+								<field name="stream_start_time" widget="float_time"/>
+								<field name="stream_end_time" widget="float_time"/>
+								<field name="demoudling"/>
+								<field name="remarks"/>
+							</tree>
+						</field>
+					</page>
+					<page string="Activity Log">
+ 	                  		<field name="daily_planning_schedule_log" readonly="1">
+ 	                  			<tree>
+ 	                  				<field name="user_id"/>
+ 	                  				<field name="state_from"/>
+ 	                  				<field name="state_to"/>
+ 	                  				<field name="changed_on"/>
+ 	                  			</tree>
+ 	                  		</field>
+ 	                  	</page>
+				</notebook>
+			</form>
+		</field>
+	</record>
+	
+	<record id="concrete_planning_tree" model="ir.ui.view">
+		<field name="name">concrete.planning.tree</field>
+        <field name="model">concrete.planning</field>            
+        <field name="arch" type="xml">
+			<tree string="Concrete Planning" delete="0" create="0">
+				<field name="plan_date"/>
+				<field name="name"/>
+				<field name="ring_count"/> 
+				<field name="concrete_plan_state"/>               	
+            </tree>
+         </field>
+	</record>
+	
+	<record id="concrete_planning_action" model="ir.actions.act_window">
+		<field name="name">Concrete Planning</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">concrete.planning</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('daily_plan_id', '=', active_id)]</field>
+	</record>
+	
+	<!--Actual Planning Schedule -->
+	<record id="actual_planning_form" model="ir.ui.view">
+		<field name="name">actual.planning.form</field>
+        <field name="model">actual.planning</field>
+		<field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Actual Planning Schedule(Add Shift)" delete="0" create="0">
+
+				<header>
+					<button name="button_done" type="object" string="Confirm" class="oe_highlight" attrs="{'invisible': [('actual_plan_state', '=', 'done')]}"/>
+					<button name="button_reset" type="object" string="Reset" class="oe_highlight" attrs="{'invisible': [('actual_plan_state', '!=', 'done')]}"/>
+<!--
+					<button name="button_done" type="object" string="Confirm" class="oe_highlight" attrs="{'invisible': [('concrete_plan_state', '=', 'done')]}"/>
+					<button name="concrete_schedule_report" type="object" string="Concrete Schedule Report" class="oe_highlight" attrs="{'invisible': [('concrete_plan_state', '!=', 'done')]}"/>
+					<field name="concrete_plan_state" widget="statusbar" statusbar_visible="progress,done" class="oe_highlight"/>
+-->
+					<button name="actual_planning_report" type="object" string="Print" 
+class="oe_highlight"/>				
+				</header>
+
+				<group>
+					<field name="plan_date" readonly="1"/>
+					<field name="name" required="1" />
+					<field name="ring_count" readonly="1"/>
+					<field name="actual_plan_state" invisible="1"/>
+				</group>
+				<notebook>
+					<page string="Actual Concrete Schedule">
+						<field name="actual_concrete_schedule_ids" attrs="{'readonly': [('actual_plan_state', '=', 'done')]}">
+							<tree string="Actual Concrete Schedule" editable="bottom" delete="0" create="0">
+								<field name="s_no" readonly="1"/>
+								<field name="rfi_no" readonly="1"/>
+								<field name="ring_id" readonly="1"/>
+								<field name="any_change"/>
+								<field name="mould_id" options='{"no_open": True, "no_create": True}' attrs="{'readonly': [('any_change', '=', False)]}"/>
+								<field name="mould_remarks" attrs="{'invisible': [('any_change', '=', False)],'required':[('any_change', '=', True)]}"/>
+								<field name="segment_id" domain="[('product_type','=','segment')]" options='{"no_open": True,"no_create": True}' widget="many2many_tags"/>
+								<field name="concrete_start_time" widget="float_time"/>
+								<field name="concrete_end_time" widget="float_time"/>
+								<field name="finishing_time" widget="float_time"/>
+								<field name="steam_start_time" widget="float_time"/>
+								<field name="steam_end_time" widget="float_time"/>
+								<field name="demoudling"/>
+								<field name="state" required="1"/>
+								<field name="remarks" attrs="{'required':[('state','=', 'archived')], 'invisible':[('state','!=', 'archived')]}"/>
+							</tree>
+						</field>
+					</page>
+					<page string="Daily Concrete Planning">
+						<field name="daily_concrete_schedule_ids" attrs="{'readonly': [('actual_plan_state', '=', 'done')]}">
+							<tree string="Daily Concrete Planning" editable="bottom" delete="0" create="0">
+								<field name="s_no" readonly="1"/>
+								<field name="rfi_no" readonly="1"/>
+								<field name="ring_id" readonly="1"/>
+								<field name="mould_id" options='{"no_open": True,"no_create": True}' required="1"/>
+								<field name="segment_id" domain="[('product_type','=','segment')]" options='{"no_open": True,"no_create": True}' widget="many2many_tags"/>
+								<field name="primary_demoulding_time"/>
+								<field name="cage_fixing_start_time" widget="float_time"/>
+								<field name="cage_fixing_end_time" widget="float_time"/>
+								<field name="concrete_start_time" widget="float_time"/>
+								<field name="concrete_end_time" widget="float_time"/>
+								<field name="finishing" widget="float_time"/>
+								<field name="stream_start_time" widget="float_time"/>
+								<field name="stream_end_time" widget="float_time"/>
+								<field name="demoudling"/>
+								<field name="remarks"/>
+							</tree>
+						</field>
+					</page>
+					<page string="Activity Log">
+ 	                  		<field name="actual_planning_log" readonly="1">
+ 	                  			<tree>
+ 	                  				<field name="user_id"/>
+ 	                  				<field name="state_from"/>
+ 	                  				<field name="state_to"/>
+ 	                  				<field name="changed_on"/>
+ 	                  			</tree>
+ 	                  		</field>
+ 	                  	</page>
+				</notebook>
+			</form>
+		</field>
+	</record>
+	
+	<record id="actual_planning_tree" model="ir.ui.view">
+		<field name="name">actual.planning.tree</field>
+        <field name="model">actual.planning</field>            
+        <field name="arch" type="xml">
+			<tree string="Actual Production" delete="0" create="0">
+				<field name="plan_date"/>
+				<field name="name"/>
+				<field name="ring_count"/> 
+            </tree>
+         </field>
+	</record>
+	
+	<record id="actual_planning_action" model="ir.actions.act_window">
+		<field name="name">Actual Production</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">actual.planning</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('daily_plan_id', '=', active_id)]</field>
+	</record>
+	
+	<!-- Manufacturing Action -->
+	<record id="manufacturing_plan_action" model="ir.actions.act_window">
+		<field name="name">Manufacturing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('daily_plan_id', '=', active_id)]</field>
+	</record> 
+
+	<!-- Daily Planning Schedule -->
+	
+	<record id="daily_planning_schedule_form" model="ir.ui.view">
+		<field name="name">daily.planning.schedule.form</field>
+        <field name="model">daily.planning.schedule</field>
+		<field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Daily Planning Schedule">
+				<header>
+					<button name="button_shift_plan" type="object" string="Create Shift" class="oe_highlight" attrs="{'invisible': [('daily_plan_state', '!=', 'ready')]}"/>
+<!--
+					<button name="button_manufacturing" type="object" string="Create Manufacturing" class="oe_highlight" attrs="{'invisible': [('daily_plan_state', '!=', 'progress')]}"/>
+-->
+					<field name="daily_plan_state" widget="statusbar" statusbar_visible="pending,ready,progress,done" class="oe_highlight"/>
+				</header>
+				<sheet>
+					<div class="oe_button_box" name="button_box">
+                        <button name="%(concrete_planning_action)d" type="action" class="oe_stat_button" icon="fa-play-circle-o" attrs="{'invisible': [('shiftorder_count', '=', 0)]}">
+							 <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value"><field name="shiftorder_done_count" widget="statinfo" nolabel="1"/> / <field name="shiftorder_count" widget="statinfo" nolabel="1"/></span>
+								<span class="o_stat_text">Daily Schedule</span>
+							</div>
+						</button>
+<!--
+						<button name="%(manufacturing_plan_action)d" type="action" class="oe_stat_button" string="Manufacturing" icon="fa-play-circle-o" attrs="{'invisible': [('daily_plan_state', '!=', 'progress')]}"/>
+-->
+						<button name="%(actual_planning_action)d" type="action" class="oe_stat_button" string="Actual Production" icon="fa-play-circle-o" attrs="{'invisible': [('daily_plan_state', 'in', ['pending','ready'])]}"/>
+                    </div>
+                    <group>
+						<group>
+							<field name="name" required="1" attrs="{'readonly': [('daily_plan_state', 'not in', ('pending', 'ready'))]}"/>
+							<field name="shift_count" required="1" attrs="{'readonly': [('daily_plan_state', 'not in', ('pending', 'ready'))]}"/>
+						</group>
+						<group>
+							<field name="location_id" attrs="{'readonly': [('daily_plan_state', 'not in', ('pending', 'ready'))]}" domain="[('usage','=','internal')]" options='{"no_open": True, "no_create": True}'/>
+							<field name="project_id" attrs="{'readonly': [('daily_plan_state', 'not in', ('pending', 'ready'))]}" options='{"no_open": True, "no_create": True}'/>
+						</group>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="daily_planning_schedule_tree" model="ir.ui.view">
+		<field name="name">daily.planning.schedule</field>
+        <field name="model">daily.planning.schedule</field>            
+        <field name="arch" type="xml">
+			<tree string="Daily Planning Schedule">
+				<field name="name"/>
+				<field name="location_id"/>
+				<field name="project_id"/>
+            </tree>
+         </field>
+	</record>
+
+	<record id="daily_planning_schedule_action" model="ir.actions.act_window">
+		<field name="name">Daily Planning Schedule</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">daily.planning.schedule</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+	<menuitem id="daily_planning_schedule_menu"
+          parent="mrp.menu_mrp_manufacturing"
+          action="daily_planning_schedule_action"
+          sequence="0" groups="inma_group_admin,inma_group_manager,inma_group_user,inma_group_site_admin_assistant,inma_group_hr_manager,inma_group_project_assistant,inma_group_accounts_manager,inma_group_project_director,inma_group_store_in_charge"/>
+            
+	
+	<!--Manufacturing Mould Casting -->
+	
+	<record id="view_mould_casting_form" model="ir.ui.view">
+		<field name="name">mould.casting.form</field>
+		<field name="model">mould.casting</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form  string="Concrete Plan">
+				<group>
+					<group string="Concrete">
+						<field name="date"/>
+						<field name="weather"/>
+						<field name="start_time" widget="float_time"/>
+						<field name="close_time" widget="float_time"/>
+						<field name="strength"/>
+						<field name="floor_incharge" options='{"no_open": True, "no_create": True}'/>
+					</group>
+					<group string="Post Concrete Job">
+						<field name="post_concrete_start_time" widget="float_time"/>
+						<field name="post_concrete_close_time" widget="float_time"/>
+						<field name="post_concrete_floor_incharge" options='{"no_open": True, "no_create": True}'/>
+						<field name="post_concrete_strength"/>
+					</group>
+				</group>
+				<notebook>
+					<page string="Mould Casting Line">
+						<field name="mould_casting_line_ids"> 
+							<tree editable="bottom" delete="0" create="0">
+								<field name="ring_id" readonly="1"/>
+								<field name="mould_id" options='{"no_open": True,"no_create": True}' readonly="1"/>
+								<field name="segment_ids" widget="many2many_tags" readonly="1"/>
+								<field name="micro_finishing"/>
+								<field name="ring_finishing"/>
+								<field name="rfi_closing"/>								
+							</tree>
+						</field>
+					</page>
+				</notebook>
+			</form>
+		</field>
+	</record>
+	
+	<record id="view_mould_casting_tree" model="ir.ui.view">
+		<field name="name">view.mould.casting.tree</field>
+        <field name="model">mould.casting</field>            
+        <field name="arch" type="xml">
+			<tree string="Mould Casting">
+				<field name="date"/>
+				<field name="weather"/>
+				<field name="strength"/>
+            </tree>
+         </field>
+	</record>
+	
+	<record id="view_mould_casting_action" model="ir.actions.act_window">
+		<field name="name">Mould Casting</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mould.casting</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+<!--
+	<menuitem id="mould_casting_menu"
+          parent="mrp.menu_mrp_manufacturing"
+          action="view_mould_casting_action"
+          sequence="11" groups="inma_group_admin,inma_group_manager,inma_group_user,inma_group_site_admin_assistant,inma_group_hr_manager,inma_group_project_assistant,inma_group_accounts_manager,inma_group_project_director,inma_group_store_in_charge"/>
+-->
+          
+          <!--Mould Preparation-->
+          
+    <record id="view_mould_preparation_form" model="ir.ui.view">
+		<field name="name">mould.preparation.form</field>
+		<field name="model">mould.preparation</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form  string="Mould Preparation">
+
+				<header>
+					<button name="print_report" string="Print Report" type="object" class="oe_highlight"/>
+				</header>
+				<group>
+					<group>
+						<field name="date"/>
+						<field name="start_time" widget="float_time"/>
+						<field name="supervisor_name"/>
+					</group>
+					<group>						
+						<field name="strength"/>
+						<field name="close_time" widget="float_time"/>
+
+					</group>
+				</group>
+				<notebook>
+					<page string="Front Side">
+						<field name="mould_preparation_line_ids"> 
+							<tree editable="bottom">
+								<field name="ring_id"/>
+								<field name="mould_id" options='{"no_open": True,"no_create": True}'/>
+								<field name="segment_id"/>
+								<field name="demoudling_time_pre_ring_approx"/>
+								<field name="demoudling_time_pre_ring_done"/>
+								<field name="cleaning_oil_time"/>
+								<field name="cleaning_oil_pax"/>								
+								<field name="cage_fixing_time"/>							
+								<field name="cage_fixing_pax"/>	
+								<field name="concreting_time"/>	
+								<field name="remarks"/>				
+							</tree>
+						</field>
+					</page>
+					<page string="Back Side Workers">
+						<field name="back_side_workers_ids"> 
+							<tree editable="bottom">
+								<field name="employee_id"/>
+								<field name="id_no" readonly="1"/>
+								<field name="work"/>
+								<field name="start_time"/>
+								<field name="end_time"/>
+								<field name="remarks"/>		
+							</tree>
+						</field>
+					</page>
+				</notebook>
+			</form>
+		</field>
+	</record>
+	
+	<record id="view_mould_preparation_tree" model="ir.ui.view">
+		<field name="name">view.mould.preparation.tree</field>
+        <field name="model">mould.preparation</field>            
+        <field name="arch" type="xml">
+			<tree string="Mould Preparation">
+				<field name="date"/>
+				<field name="start_time"/>
+				<field name="close_time"/>
+				<field name="strength"/>
+            </tree>
+         </field>
+	</record>
+	
+	<record id="view_mould_preparation_action" model="ir.actions.act_window">
+		<field name="name">Mould Preparation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mould.preparation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+<!--
+	<menuitem id="mould_preparation_menu"
+          parent="mrp.menu_mrp_manufacturing"
+          action="view_mould_preparation_action"
+          sequence="12" groups="inma_group_admin,inma_group_manager,inma_group_user,inma_group_site_admin_assistant,inma_group_hr_manager,inma_group_project_assistant,inma_group_accounts_manager,inma_group_project_director,inma_group_store_in_charge"/>
+-->
+          
+   <!--Daily Work Progress-->
+   
+   <record id="view_daily_employee_workprogress_form" model="ir.ui.view">
+		<field name="name">daily.employee.workprogress.form</field>
+		<field name="model">daily.employee.workprogress</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form  string="Daily Work Progress">
+				<group>
+					<group>
+						<field name="date" required="1"/>
+						<field name="day"/>
+						<field name="weather"/> 
+						<field name="special_event_ids" widget="many2many_tags"/>
+					</group>
+					<group>
+						<field name="start" widget="float_time"/>
+						<label for="lunch_break_from" string="Lunch Break"/>
+						<div><field name="lunch_break_from" class="oe_inline" widget="float_time"/> - <field name="lunch_break_to" class="oe_inline" widget="float_time"/></div>
+						<field name="finish" widget="float_time"/>
+					</group>
+				</group>
+			</form>
+		</field>
+	</record>
+	
+	<record id="view_daily_employee_workprogress_tree" model="ir.ui.view">
+		<field name="name">view.daily.employee.workprogress.tree</field>
+        <field name="model">daily.employee.workprogress</field>            
+        <field name="arch" type="xml">
+			<tree string="Daily Work Progress">
+				<field name="date"/>
+				<field name="day"/>
+				<field name="weather"/>
+            </tree>
+         </field>
+	</record>
+	
+	<record id="view_daily_employee_workprogress_action" model="ir.actions.act_window">
+		<field name="name">Daily Work Progress</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">daily.employee.workprogress</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+<!--
+	<menuitem id="daily_employee_workprogress_menu"
+          parent="mrp.menu_mrp_manufacturing"
+          action="view_daily_employee_workprogress_action"
+          sequence="13" groups="inma_group_admin,inma_group_manager,inma_group_user,inma_group_site_admin_assistant,inma_group_hr_manager,inma_group_project_assistant,inma_group_accounts_manager,inma_group_project_director,inma_group_store_in_charge"/>
+          
+-->
+    <!--Daily Planning Transaction-->
+    <record id="view_daily_planning_transaction_form" model="ir.ui.view">
+		<field name="name">daily.planning.transaction.form</field>
+		<field name="model">daily.planning.transaction</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form  string="Transaction Period">
+				<header>
+					<button name="button_archived" type="object" string="Archive" class="oe_highlight" attrs="{'invisible': [('state', '=', 'archived')]}"/>
+					<field name="state" widget="statusbar" statusbar_visible="active,archived" class="oe_highlight"/>
+				</header>
+				<group>
+					<group>
+						<field name="cage_fix_period" widget="float_time" required="1" attrs="{'readonly': [('state', '=', 'archived')]}"/>
+						<field name="concrete_start_period" widget="float_time" required="1" attrs="{'readonly': [('state', '=', 'archived')]}"/> 
+						<field name="steam_start_period" widget="float_time" required="1" attrs="{'readonly': [('state', '=', 'archived')]}"/> 
+						<field name="demoulding_period" widget="float_time" required="1" attrs="{'readonly': [('state', '=', 'archived')]}"/> 
+					</group>
+					<group>
+						<field name="finish_period" widget="float_time" required="1" attrs="{'readonly': [('state', '=', 'archived')]}"/>
+						<field name="concrete_end_period" widget="float_time" required="1" attrs="{'readonly': [('state', '=', 'archived')]}"/>
+						<field name="steam_end_period" widget="float_time" required="1"	 attrs="{'readonly': [('state', '=', 'archived')]}"/>
+					</group>
+				</group>
+			</form>
+		</field>
+	</record>
+    
+    <record id="view_daily_planning_transaction_tree" model="ir.ui.view">
+		<field name="name">view.daily.planning.transaction.tree</field>
+        <field name="model">daily.planning.transaction</field>            
+        <field name="arch" type="xml">
+			<tree string="Scheduling Period">
+				<field name="cage_fix_period"/>
+				<field name="finish_period"/>
+				<field name="state"/>
+            </tree>
+         </field>
+	</record>
+	
+	<record id="view_daily_planning_transaction_action" model="ir.actions.act_window">
+		<field name="name">Transaction Schedule</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">daily.planning.transaction</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<menuitem id="daily_planning_transaction_menu"
+          parent="mrp.menu_mrp_manufacturing"
+          action="view_daily_planning_transaction_action"
+          sequence="14" groups="inma_group_admin,inma_group_manager,inma_group_user,inma_group_site_admin_assistant,inma_group_hr_manager,inma_group_project_assistant,inma_group_accounts_manager,inma_group_project_director,inma_group_store_in_charge"/>
+
+	<!-- Manufacturing Inherit -->
+	<record id="mrp_production_form_view_inherit" model="ir.ui.view">
+		<field name="name">mrp.production.form.view.inherit</field>
+		<field name="model">mrp.production</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+		<field name="arch" type="xml">
+			<field name="product_id" position="before">
+				<field name="shift_id" options='{"no_open": True,"no_create": True}' required="1"/>
+			</field>
+		</field>
+	</record>
+	
+	<!--Production Testing -->
+	<record id="view_production_testing_form" model="ir.ui.view">
+		<field name="name">view.production.testing.form</field>
+		<field name="model">production.testing</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form  string="Production Tracking">
+				<group>
+					<group>
+						<field name="date"/>
+						<field name="ring_master_id"/>
+					</group>
+					<group>
+						<field name="permanant_ring_count"/>
+						<field name="temporary_ring_count"/>
+						<field name="approved_ring_count"/>
+						<field name="dispatched_ring_count"/>
+					</group>
+				</group>
+				<notebook>
+					<page string="Production Tracking">
+						<field name="production_testing_ids"> 
+							<tree editable="bottom" delete="0" create="0">
+								<field name="rfi_no" readonly="1"/>
+								<field name="ring_id" readonly="1"/>
+								<field name="date" invisible="1"/>
+								<field name="mould_id" readonly="1"/>
+								<field name="segment_ids" widget="many2many_tags" readonly="1"/>
+								<field name="permanent_ring"/>
+								<field name="permanent_ref"/>
+								<field name="temporary_ring"/>
+								<field name="temporary_ref"/>
+								<field name="approved_ring"/>
+								<field name="approved_date"/>
+								<field name="approved_ref"/>
+								<field name="dispatched_ring"/>								
+								<field name="dispatched_date"/>								
+								<field name="dispatched_ref"/>								
+								<field name="micro_finishing"/>								
+								<field name="micro_finishing_date"/>								
+								<field name="micro_finishing_ref"/>								
+							</tree>
+						</field>
+					</page>
+				</notebook>
+			</form>
+		</field>
+	</record>
+	
+	<record id="view_production_testing_tree" model="ir.ui.view">
+		<field name="name">view.production.testing.tree</field>
+        <field name="model">production.testing</field>            
+        <field name="arch" type="xml">
+			<tree string="Production Tracking">
+				<field name="date"/>
+				<field name="ring_master_id"/>
+            </tree>
+         </field>
+	</record>
+	
+	<record id="view_production_testing_action" model="ir.actions.act_window">
+		<field name="name">Production Tracking</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">production.testing</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+	<menuitem id="production_testing_menu"
+          parent="mrp.menu_mrp_manufacturing"
+          action="view_production_testing_action"
+          sequence="3" groups="inma_group_admin,inma_group_manager,inma_group_user,inma_group_site_admin_assistant,inma_group_hr_manager,inma_group_project_assistant,inma_group_accounts_manager,inma_group_project_director,inma_group_store_in_charge"/>
+
+	
+</odoo>

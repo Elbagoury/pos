@@ -1,0 +1,47 @@
+<odoo>
+	<!--Pay In/out Report-->
+	
+	<record id="view_pay_in_out_report" model="ir.ui.view">
+		<field name="name">view.pay.in.out.report</field>
+        <field name="model">pay.in.out.report</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Paid In/Out" create="false" edit="false" >
+				<group>
+					<group>
+						<field name="date"/>
+						
+					</group>	
+				</group>
+				<newline/>
+                	<notebook>
+                		<page string="Paid In/Out">
+							<field name="pay_in_out_ids" nolabel="1" readonly="1">
+								<tree create="false" delete="false" editable="bottom">	
+									<field name="label"/>
+                					<field name="pay_in"/>
+                					<field name="pay_out"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+			</form>
+		</field>
+	</record>
+	
+	<record id="action_pay_in_out_report" model="ir.actions.act_window">
+            <field name="name">Paid In/Out</field>
+            <field name="res_model">pay.in.out.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_pay_in_out_report"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_pay_in_out_report" id="menu_pay_in_out_report"
+            parent="reconciliations_menu" sequence="4"/>
+
+</odoo>

@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_users_mapol_group_staff,access.res.users.mapol.group.staff,base.model_res_users,mapol_group_staff,1,0,0,0
+access_hr_employee_mapol_group_staff ,access.hr.employee.mapol.group.staff ,model_hr_employee,mapol_group_staff,1,1,0,0
+access_hr_employee_mapol_group_admin,access.hr.employee.mapol.group.admin ,model_hr_employee, mapol_group_admin,1,1,1,1
+access_academic_record_mapol_group_staff,access.hr.academic.record.mapol.group.staff ,model_hr_academic_record,mapol_group_staff,1,1,1,0
+access_academic_record_mapol_group_admin,access.hr.academic.record.mapol.group.admin ,model_hr_academic_record, mapol_group_admin,1,1,1,1
+access_experience_mapol_group_staff,access.hr.experience.mapol.group.staff ,model_hr_experience,mapol_group_staff,1,1,1,0
+access_experience_mapol_group_admin,access.hr.experience.mapol.group.admin ,model_hr_experience, mapol_group_admin,1,1,1,1
+access_insurance_mapol_group_staff,access.hr.insurance.mapol.group.staff ,model_hr_insurance,mapol_group_staff,1,1,1,0
+access_insurance_mapol_group_admin,access.hr.insurance.mapol.group.admin ,model_hr_insurance, mapol_group_admin,1,1,1,1
+access_family_mapol_group_staff,access.hr.family.mapol.group.staff ,model_hr_family,mapol_group_staff,1,1,1,0
+access_family_mapol_group_admin,access.hr.family.mapol.group.admin ,model_hr_family, mapol_group_admin,1,1,1,1

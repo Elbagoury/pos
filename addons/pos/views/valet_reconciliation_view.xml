@@ -1,0 +1,65 @@
+<!--Tank Log Reading -->
+<odoo>
+	<record id="valet_reconciliation_tree" model="ir.ui.view">
+		<field name="name">valet.reconciliation.tree</field>
+        <field name="model">valet.reconciliation</field>            
+        <field name="arch" type="xml">
+			<tree string="Valet Reconciliation">
+				<field name="date"/>
+            </tree>
+         </field>
+	</record> 
+	
+	<record id="valet_reconciliation_form" model="ir.ui.view">
+            <field name="model">valet.reconciliation</field>
+            <field name="arch" type="xml">
+                <form string="Valet Reconciliation">
+					<sheet>
+					   <group>
+							<group>
+								<field name="date"/>
+								<field name="shift_id" options='{"no_open": True, "no_create": True}'/>
+							</group>
+						</group>
+						<notebook>
+							<page string="Valet Reconciliation">
+								<field name="valet_ids">
+									<tree editable="bottom" delete="0" create="0">
+										<field name="product_id" readonly="1"/>
+										<field name="description" readonly="1"/>
+										<field name="retail_price" readonly="1"/>
+										<field name="open_read"/>
+										<field name="close_read"/>
+										<field name="meter_sales" readonly="1"/>
+										<field name="test_meter"/>
+										<field name="net_meter_sale_qty" readonly="1"/>
+										<field name="net_meter_sale_value" readonly="1"/>
+										<field name="pos_quantity" readonly="1"/>
+										<field name="pos_value" readonly="1"/>
+										<field name="quantity_variance" readonly="1"/>
+										<field name="value_variance" readonly="1"/>
+										<field name="notes"/>
+									</tree>
+								</field>
+							</page>
+						</notebook>
+                   </sheet> 
+                </form>
+            </field>
+        </record>
+	
+
+	<record id="valet_reconciliation_action" model="ir.actions.act_window">
+		<field name="name">Valet Reconciliation</field>
+        <field name="res_model">valet.reconciliation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem name="Valet Reconciliation" id="valet_reconciliation_menu" sequence="7"/>
+	
+	<menuitem name="Valet Reconciliation" id="valet_reconciliation_sub_menu" parent="valet_reconciliation_menu"/>
+
+   <menuitem action="valet_reconciliation_action" id="valet_reconciliation_report"
+            parent="valet_reconciliation_sub_menu" sequence="1"/>
+</odoo>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="pump_meter_read_report" model="ir.ui.view">
+            <field name="name">view.pump.meter.read.report</field>
+            <field name="model">pump.meter.read.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Pump Meter Read" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="date"/>
+							<field name="day_shift"/>
+						</group>	
+						<group>
+							<field name="shift_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('day_shift','!=', 'shift')]}"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Pump Meter Read">
+							<field name="pump_meter_ids" nolabel="1" readonly="1">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="pump_id"/>
+                					<field name="nozzel_id"/>
+                					<field name="product_id"/>
+                					<field name="opening_read"/>
+                					<field name="closing_read"/>
+                					<field name="meter_sale"/>
+                					<field name="pump_test"/>
+                					<field name="net_meter_sale"/>
+                					<field name="till_sales"/>
+                					<field name="variance"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_pump_meter_read_report" model="ir.actions.act_window">
+            <field name="name">Pump Meter Read</field>
+            <field name="res_model">pump.meter.read.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pump_meter_read_report"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_pump_meter_read_report" id="menu_pump_meter_read"
+            parent="reconciliations_menu" sequence="1"/>
+            
+</odoo> 

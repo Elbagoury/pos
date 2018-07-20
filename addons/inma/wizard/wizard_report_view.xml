@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_vendor_report" model="ir.ui.view">
+            <field name="name">vendor.report.form</field>
+            <field name="model">vendor.list.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Vendor Report" create="false" edit="false" delete="false">
+                		<group>		
+							<field name="category"/>
+							<field name="city_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('category','!=', 'city_wise')]}"/>
+							<field name="product_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('category','!=', 'product_wise')]}"/>
+							<field name="vendor_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('category','!=', 'vendor_wise')]}" domain="[('supplier','=', True)]"/>
+						
+						</group>
+
+                	<notebook>
+                		<page string="Vendor List">
+							<field name="vendor_list_ids">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="vendor_id" options='{"no_open": True}'/>
+                					<field name="product_id" options='{"no_open": True}'/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+						<footer>
+                        	<button string="Cancel" class="oe_link" special="cancel"/>                        	
+                    	</footer>                	
+               </form>
+            </field>
+        </record>
+
+		<record id="action_vendor_report" model="ir.actions.act_window">
+            <field name="name">Vendor Report</field>
+            <field name="res_model">vendor.list.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="target">new</field>            
+            <field name="view_id" ref="view_vendor_report"/>
+            <field name="help">Vendor Report</field>
+        </record>
+
+        <menuitem action="action_vendor_report" id="menu_vendor_report"
+            parent="purchase.menu_procurement_management" sequence="35"/>
+            
+</odoo>

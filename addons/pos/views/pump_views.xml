@@ -1,0 +1,540 @@
+<odoo>
+	<menuitem name="Reports" id="reports_menu" parent="sales_team.menu_base_partner" sequence="7"/>
+	<record id="dom_pump_form" model="ir.ui.view">
+		<field name="name">dom.pump.form</field>
+        <field name="model">dom.pump</field>
+		<field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Pump">
+				<sheet>
+					<field name="image" widget="image" class="oe_avatar"/>
+					<div class="oe_title">
+                        <label class="oe_edit_only" for="name" string="Name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+					
+					<group>
+						<group>
+<!--
+							<field name="available_fuel"/>
+							<field name="consumed_fuel"/>
+							<field name="left_fuel"/>
+-->
+							<field name="is_active"/>
+						</group>
+					</group>
+					<notebook>
+						<page string="Nozle">
+							<field name="dom_nozle_ids">
+								<tree editable="bottom">
+									<field name="name"/>
+									<field name="is_active"/>
+									<field name="state"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+				</sheet>
+			</form>
+		</field>
+	</record>
+	
+	<record id="dom_pump_tree" model="ir.ui.view">
+		<field name="name">dom.pump.tree</field>
+        <field name="model">dom.pump</field>            
+        <field name="arch" type="xml">
+			<tree string="Pump">
+				<field name="name"/>
+				<field name="is_active"/>
+<!--
+				<field name="available_fuel"/>
+				<field name="consumed_fuel"/>
+				<field name="left_fuel"/>
+				<field name="product_id"/>
+-->
+            </tree>
+         </field>
+	</record>
+	
+	<record id="dom_pump_action" model="ir.actions.act_window">
+		<field name="name">Pump</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">dom.pump</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem name="Dom"
+            id="dom_menu" parent="sales_team.menu_base_partner"
+            sequence="4"/>
+<!--
+	<menuitem id="dom_menu" parent="point_of_sale.menu_point_root" name="Dom" sequence="12"/>
+-->
+          
+          <menuitem id="dom_pump_menu" parent="dom_menu" action="dom_pump_action" sequence="1"/>
+         
+    <!--Nozle -->
+    
+    <record id="dom_nozle_form" model="ir.ui.view">
+		<field name="name">dom.nozle.form</field>
+        <field name="model">dom.nozle</field>
+		<field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Nozle">
+				<sheet>
+					<field name="image1" widget="image" class="oe_avatar"/>
+					<div class="oe_title">
+                        <label class="oe_edit_only" for="name" string="Name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+						<group>
+							<field name="state"/>
+							<field name="name"/>
+							<field name="tank_id"/>
+							<field name="product_id" invisible="1"/>
+							<field name="image" widget="image" invisible="1"/>
+						</group>
+						<group>
+							<field name="available_fuel"/>
+							<field name="consumed_fuel"/>
+							<field name="left_fuel"/>
+							<field name="vechile_info" invisible="1"/>
+						</group>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+	
+	<record id="dom_nozle_tree" model="ir.ui.view">
+		<field name="name">dom.nozle.tree</field>
+        <field name="model">dom.nozle</field>            
+        <field name="arch" type="xml">
+			<tree string="Nozle">
+				<field name="name"/>
+				<field name="is_active"/>
+				<field name="dom_pump_id"/>
+				<field name="state"/>
+            </tree>
+         </field>
+	</record> 
+	
+	 <record id="view_dom_nozle_filter" model="ir.ui.view">
+    	<field name="name">Nozzel</field>
+        <field name="model">dom.nozle</field>
+        <field name="arch" type="xml">
+        	<search string="Nozzel">
+				
+				 <group expand="0" string="Group By...">                        
+					<filter name="tank_id" string="Tank" icon="terp-personal+" domain="[]" context="{'group_by':'tank_id'}"/>
+<!--
+                    <filter name="dom_pump_id" string="Pump" icon="terp-personal+" domain="[]" context="{'group_by':'dom_pump_id'}"/>
+-->
+                 </group>
+            </search>
+        </field>
+    </record>
+    
+    <record id="dom_nozle_action" model="ir.actions.act_window">
+		<field name="name">Nozle</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">dom.nozle</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_tank_id':1}</field>
+        <field name="search_view_id" ref="view_dom_nozle_filter"/> 
+	</record>
+    
+    <menuitem id="dom_nozle_menu" parent="dom_menu" action="dom_nozle_action" sequence="2"/>
+    
+    <!--Tank Master -->
+    
+     <record id="tank_master_form" model="ir.ui.view">
+		<field name="name">tank.master.form</field>
+        <field name="model">tank.master</field>
+		<field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Tank">
+				<sheet>
+                    <group>
+						<group>
+							<field name="name"/>
+							<field name="tank_type"/>
+							<field name="capacity"/>
+							<field name="ullage"/>
+							<field name="temp"/>
+						</group>
+						<group>
+							<field name="available_fuel"/>
+							<field name="consumed_fuel"/>
+							<field name="left_fuel"/>
+							<field name="water"/>
+						</group>
+					</group>
+					<notebook>
+						<page string="Tank log">
+							<field name="tank_log_ids" readonly="1">
+								<tree editable="bottom">
+									<field name="date"/>
+									<field name="shift_id"/>
+									<field name="tank_id"/>
+									<field name="product_id"/>
+									<field name="qty"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+				</sheet>
+			</form>
+		</field>
+	</record>
+	
+	<record id="tank_master_tree" model="ir.ui.view">
+		<field name="name">tank.master.tree</field>
+        <field name="model">tank.master</field>            
+        <field name="arch" type="xml">
+			<tree string="Tank">
+				<field name="name"/>
+				<field name="tank_type"/>
+				<field name="capacity"/>
+            </tree>
+         </field>
+	</record> 
+	
+	<record id="tank_master_action" model="ir.actions.act_window">
+		<field name="name">Tank</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tank.master</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem id="tank_master_menu" parent="dom_menu" action="tank_master_action" sequence="3"/>
+    
+    <!--Branch Master -->
+    
+     <record id="batch_master_form" model="ir.ui.view">
+		<field name="name">batch.master.form</field>
+        <field name="model">batch.master</field>
+		<field name="type">form</field>
+        <field name="arch" type="xml">
+			<form string="Batch">
+				<group>
+					<group>
+						<field name="batch_start"/>
+						<field name="batch_end"/>
+					</group>
+				</group>
+				<notebook>
+					<page string="Day">
+						<field name="day_ids">
+							<form>
+								<group>
+									<group>
+										<field name="name" readonly="1"/>
+										<field name="date_from" readonly="1"/>
+										<field name="date_to" readonly="1"/>
+									</group>
+								</group>
+								<notebook>
+									<page string="Shift">
+										<field name="shift_ids">
+											<tree editable="bottom">
+												<field name="name"/>
+												<field name="date_from"/>
+												<field name="date_to"/>
+											</tree>
+										</field>
+									</page>
+								</notebook>
+							</form>
+							<tree delete="0" create="0">  
+								<field name="name"/>                
+                    			<field name="date_from"/>
+                    			<field name="date_to"/>
+                    		</tree>
+						</field>
+					</page>
+				</notebook>
+			</form>
+		</field>
+	</record>
+	
+	<record id="batch_master_tree" model="ir.ui.view">
+		<field name="name">batch.master.tree</field>
+        <field name="model">batch.master</field>            
+        <field name="arch" type="xml">
+			<tree string="Batch">
+				<field name="batch_start"/>
+				<field name="batch_end"/>
+            </tree>
+         </field>
+	</record> 
+	
+	<record id="batch_master_action" model="ir.actions.act_window">
+		<field name="name">Batch</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">batch.master</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem id="batch_master_menu" parent="dom_menu" action="batch_master_action" sequence="4"/>
+	
+	<record id="view_pos_order_form_inherit" model="ir.ui.view">
+		<field name="name">pos.order.form.inherit</field>
+		<field name="model">pos.order</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='partner_id']" position="after">
+				<field name="vehicle_info"/>
+				<field name="nozle_id"/>
+            </xpath>
+		</field>
+	</record>
+	
+	<record id="view_pos_session_form_inherit" model="ir.ui.view">
+		<field name="name">pos.session.form.inherit</field>
+		<field name="model">pos.session</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='stop_at']" position="after">
+				<field name="shift_id" readonly="1"/>
+            </xpath>
+		</field>
+	</record>
+	
+	<record id="view_move_form_inherit" model="ir.ui.view">
+		<field name="name">view.move.form.inherit</field>
+		<field name="model">stock.move</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="stock.view_move_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='name']" position="after">
+				<field name="shift_id" readonly="1"/>
+            </xpath>
+		</field>
+	</record>
+	<!--PUMP METER -->    
+   <record id="pump_meter_form" model="ir.ui.view">
+            <field name="model">pump.meter</field>
+            <field name="arch" type="xml">
+                <form string="Pump Meter">
+					<sheet>
+					   <group>
+							<group>
+								<field name="date"/>
+							</group>
+						</group>
+						<notebook>
+							<page string="Pump Nozzel">
+								<field name="pump_nozzle_ids">
+									<tree editable="bottom" delete="0" create="0">
+										<field name="pump_id" readonly="1"/>
+										<field name="nozzel_id" readonly="1"/>
+										<field name="opening_read"/>
+										<field name="closing_read"/>
+									</tree>
+								</field>
+							</page>
+						</notebook>
+                   </sheet> 
+                </form>
+            </field>
+        </record>
+        
+        <record id="pump_meter_tree" model="ir.ui.view">
+		<field name="name">pump.meter.tree</field>
+        <field name="model">pump.meter</field>            
+        <field name="arch" type="xml">
+			<tree string="Pump Meter">
+				<field name="date"/>
+            </tree>
+        </field>
+		</record> 
+	
+
+	<record id="pump_meter_action" model="ir.actions.act_window">
+		<field name="name">Pump Meter</field>
+        <field name="res_model">pump.meter</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+   <menuitem action="pump_meter_action" id="pump_meter_menu"
+            parent="reports_menu" sequence="3"/>
+	
+	<!--Tank Log Reading -->
+
+	<record id="tank_reading_tree" model="ir.ui.view">
+		<field name="name">tank.reading.tree</field>
+        <field name="model">tank.reading</field>            
+        <field name="arch" type="xml">
+			<tree string="Tank Reading">
+				<field name="date"/>
+            </tree>
+         </field>
+	</record> 
+	
+	<record id="tank_reading_form" model="ir.ui.view">
+            <field name="model">tank.reading</field>
+            <field name="arch" type="xml">
+                <form string="Tank Reading">
+					<sheet>
+						<div class="oe_button_box" name="button_box">
+		
+						<button name="%(batch_master_action)d" type="action" class="oe_stat_button" string="Shift" icon="fa-play-circle-o"/>
+						<button name="%(pump_meter_action)d" type="action" class="oe_stat_button" string="Pump Meter" icon="fa-play-circle-o"/>
+
+                    </div>
+					   <group>
+							<group>
+								<field name="date"/>
+							</group>
+						</group>
+						<notebook>
+							<page string="Tank log Reading">
+								<field name="tank_log_ids">
+									<tree editable="bottom" delete="0" create="0">
+										<field name="date_time" readonly="1"/>
+										<field name="tank_id" readonly="1"/>
+										<field name="product_id" readonly="1"/>
+										<field name="capacity" readonly="1"/>
+										<!--<field name="day_id" readonly="1"/>
+										<field name="shift_id" readonly="1"/>-->
+										<field name="opening_gauge"/>
+										<field name="closing_gauge"/>
+									</tree>
+								</field>
+							</page>
+						</notebook>
+                   </sheet> 
+                </form>
+            </field>
+        </record>
+	
+
+	<record id="tank_log_reading_action" model="ir.actions.act_window">
+		<field name="name">Tank Log Reading</field>
+        <field name="res_model">tank.reading</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	
+	
+
+   <menuitem action="tank_log_reading_action" id="tank_log_reading_report"
+            parent="reports_menu" sequence="1"/>
+	
+	<!--Purchase Order form inherit -->
+	
+	<record id="view_purchase_order_form_inherit" model="ir.ui.view">
+		<field name="name">view.purchase.order.form.inherit</field>
+		<field name="model">purchase.order</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="purchase.purchase_order_form"/>
+		<field name="arch" type="xml">
+			<field name="date_order" position="after">
+				<field name="shift_id"/>
+			</field>
+		</field>
+	</record>
+	
+	<!-- Tank Stock log Reading-->
+	
+	<record id="tank_stock_log_tree" model="ir.ui.view">
+		<field name="name">tank.stock.log.tree</field>
+        <field name="model">tank.stock.log</field>            
+        <field name="arch" type="xml">
+			<tree string="Tank Stock Log" create="0">
+				<field name="date" readonly="1"/>
+				<field name="product_id"/>
+				<field name="tank_id"/>
+				<field name="opening_gauge"/>
+				<field name="delivery"/>
+				<field name="sales"/>
+				<field name="closing_book"/>
+				<field name="closing_gauge"/>
+				<field name="variance"/>
+            </tree>
+         </field>
+	</record> 
+	
+	<record id="tank_stock_log_action" model="ir.actions.act_window">
+		<field name="name">Tank Stock Log</field>
+        <field name="res_model">tank.stock.log</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+	</record>
+	
+   <menuitem action="tank_stock_log_action" id="tank_stock_log_report"
+            parent="reports_menu" sequence="2"/>
+            
+        
+            
+   <!-- Fuel Delivery -->
+   <record id="fuel_delivery_form" model="ir.ui.view">
+	   <field name="model">fuel.delivery</field>
+       <field name="arch" type="xml">
+		   <form string="Fuel Delivery">
+			   <sheet>
+				   <group>
+					   <group>
+						   <field name="supplier" options='{"no_open": True, "no_create": True}' domain="[('supplier','=', True)]"/>
+						   <field name="order_no"/>
+						</group>
+						<group>
+							<field name="date"/>
+							<field name="eta"/>
+						</group>
+					</group>
+					<notebook>
+						<page string="Delivery Details">
+							<field name="delivery_line_ids">
+								<tree editable="bottom" delete="0" create="0">
+									<field name="tank_id" options='{"no_open": True, "no_create": True}'/>
+									<field name="grade_id" options='{"no_open": True, "no_create": True}'/>
+<!--
+									<field name="opening_reading"/>
+									<field name="closing_reading"/>
+									<field name="qty"/>
+-->
+									<field name="fuel_qty"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+				</sheet>
+			</form>
+		</field>
+	</record>
+	
+	 <record id="fuel_delivery_tree" model="ir.ui.view">
+		<field name="name">fuel.delivery.tree</field>
+        <field name="model">fuel.delivery</field>            
+        <field name="arch" type="xml">
+			<tree string="Fuel Delivery">
+				<field name="supplier"/>
+				<field name="order_no"/>
+				<field name="date"/>
+				<field name="eta"/>
+            </tree>
+        </field>
+		</record> 
+	
+
+	<record id="fuel_delivery_action" model="ir.actions.act_window">
+		<field name="name">Fuel Delivery</field>
+        <field name="res_model">fuel.delivery</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+   <menuitem action="fuel_delivery_action" id="fuel_delivery_menu"
+            parent="reports_menu" sequence="4"/>
+	
+</odoo>

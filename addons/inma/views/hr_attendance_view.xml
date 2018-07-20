@@ -1,0 +1,137 @@
+<odoo>
+	 <menuitem id="menu_inma_attendance" icon="terp-hr" name="Attendance" sequence="11" 	
+	groups="inma_group_admin,inma_group_manager"/>
+	
+	<menuitem id="menu_inma_attendance_sub" icon="terp-hr" name="Attendance" sequence="1"  parent="menu_inma_attendance"
+	groups="inma_group_admin,inma_group_manager"/>
+	
+	<!--Day Basis Attendance -->
+	
+	<record id="employee_attendance_form" model="ir.ui.view">
+        <field name="name">employee.attendance.form</field>
+        <field name="model">employee.attendance</field>
+        <field name="arch" type="xml">
+            <form string="Attendance" version="7.0">            	
+                <group>
+                  	<group>
+						<field name="date" placeholder="Mandatory" required="1"/>	  
+						<field name="department_id" placeholder="Mandatory" required="1" options='{"no_open": True, "no_create": True}'/>   
+						<field name="shift"/>             
+              		</group>
+              	 </group>
+              	<notebook>
+					<page string="Attendance">
+						<field name="employee_attendance_line_ids">
+							<tree editable="bottom">
+								<field name="employee_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
+								<field name="id_no" readonly="1"/>
+								<field name="category_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
+								<field name="day_shift" attrs="{'readonly': [('shift', '=', 'night')]}"/>
+								<field name="night_shift" attrs="{'readonly': [('shift', '=', 'day')]}"/>
+								<field name="job_allocation"/>
+								<field name="shift" invisible="1"/>
+							</tree>
+						</field>
+					</page>
+              	</notebook>
+            </form>
+        </field>
+    </record>
+    
+    <record id="employee_attendance_tree" model="ir.ui.view">
+        <field name="name">employee.attendance.tree</field>
+        <field name="model">employee.attendance</field>            
+        <field name="arch" type="xml">
+        	<tree string="Attendance">                
+             	<field name="date"/>
+				<field name="department_id"/>		                    
+    		</tree>
+        </field>
+    </record>
+    
+    <record id="view_employee_attendance_filter" model="ir.ui.view">
+    	<field name="name">Employee</field>
+        <field name="model">employee.attendance</field>
+        <field name="arch" type="xml">
+        	<search string="Employee Attendance">
+				<field name="date"/>
+				 <group expand="0" string="Group By...">                        
+					<filter name="date" string="Date" icon="terp-personal+" domain="[]" context="{'group_by':'date'}"/>
+                    <filter name="department_id" string="Department" icon="terp-personal+" domain="[]" context="{'group_by':'department_id'}"/>
+                 </group>
+            </search>
+        </field>
+    </record>
+    
+    <record id="employee_attendance_action" model="ir.actions.act_window">
+        <field name="name">Employee Attendance</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">employee.attendance</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_department_id':1}</field>
+        <field name="view_id" ref="employee_attendance_tree"/> 
+        <field name="search_view_id" ref="view_employee_attendance_filter"/>          
+    </record>
+        
+    <menuitem action="employee_attendance_action" id="menu_employee_attendance_action" parent="menu_inma_attendance_sub" sequence="1" 
+		groups="inma_group_admin,inma_group_manager"/>
+	
+	<!--Job Basis Attendance -->
+	<record id="workbase_employee_form" model="ir.ui.view">
+        <field name="name">workbase.employee.form</field>
+        <field name="model">workbase.employee</field>
+        <field name="arch" type="xml">
+            <form string="Attendance" version="7.0">            	
+                <group>
+                  	<group>
+						<field name="date" placeholder="Mandatory" required="1"/>	  
+              		</group>
+              	 </group>
+              	<notebook>
+					<page string="Attendance">
+						<field name="workbase_employee_line_ids">
+							<tree editable="bottom">
+								<field name="employee_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
+								<field name="id_no" readonly="1"/>
+								<field name="category_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
+								<field name="forenoon_start_time" widget="float_time"/>
+								<field name="forenoon_end_time" widget="float_time"/>
+								<field name="afnoon_start_time" widget="float_time"/>
+								<field name="afnoon_end_time" widget="float_time"/>
+								<field name="total_hours_worked" widget="float_time"/>
+								<field name="extra_hours" widget="float_time"/>
+								<field name="total_hours" widget="float_time"/>
+								<field name="remarks"/>
+							</tree>
+						</field>
+					</page>
+              	</notebook>
+            </form>
+        </field>
+    </record>
+    
+     <record id="workbase_employee_tree" model="ir.ui.view">
+        <field name="name">workbase.employee.tree</field>
+        <field name="model">workbase.employee</field>            
+        <field name="arch" type="xml">
+        	<tree string="Attendance">                
+             	<field name="date"/>	                                        
+    		</tree>
+        </field>
+    </record>
+    
+    <record id="workbase_employee_action" model="ir.actions.act_window">
+        <field name="name">Job Card Attendance</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">workbase.employee</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="workbase_employee_tree"/>           
+    </record>
+    
+    <menuitem action="workbase_employee_action" id="menu_workbase_employee" parent="menu_inma_attendance_sub" sequence="2" 
+		groups="inma_group_admin,inma_group_manager"/>
+    
+</odoo>

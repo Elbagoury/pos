@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="view_operator_monitor_report" model="ir.ui.view">
+            <field name="name">view.operator.monitor.report</field>
+            <field name="model">operator.monitor.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Operator Monitor" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="date"/>
+							<field name="day_shift"/>
+						</group>	
+						<group>
+							<field name="user_id" options='{"no_open": True, "no_create": True}'/>
+							<field name="shift_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('day_shift','!=', 'shift')]}"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Operator Monitor Details">
+							<field name="operator_monitor_ids" nolabel="1">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="operator_id"/>
+                					<field name="date"/>
+                					<field name="product_id"/>
+                					<field name="quantity"/>
+                					<field name="price"/>
+                					<field name="amount"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_operator_monitor_report" model="ir.actions.act_window">
+            <field name="name">Operator Monitor</field>
+            <field name="res_model">operator.monitor.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_operator_monitor_report"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem name="Reconciliations" id="reconciliations_menu" parent="sales_team.menu_base_partner" sequence="6"/>
+
+        <menuitem action="action_operator_monitor_report" id="menu_operator_monitor_report"
+            parent="reconciliations_menu" sequence="11"/>
+            
+</odoo>           

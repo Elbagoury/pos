@@ -1,0 +1,10 @@
+import delivery_note
+import invoice
+import picking
+import purchase_order
+import report_settings
+import res_company
+import res_currency
+import res_partner
+import rfq
+import sale_order

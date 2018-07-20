@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="view_fuel_delivery_report" model="ir.ui.view">
+            <field name="name">view.fuel.delivery.report</field>
+            <field name="model">fuel.delivery.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Fuel Delivery" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="date"/>
+							<field name="day_shift"/>
+						</group>	
+						<group>
+							<field name="shift_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('day_shift','!=', 'shift')]}"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Fuel Delivery Details">
+							<field name="fuel_delivery_ids" nolabel="1">
+								<tree create="false" delete="false" editable="bottom">	
+                					<field name="tank_id" readonly="1"/>
+                					<field name="product_id" readonly="1"/>
+                					<field name="opening_gauge" readonly="1"/>
+                					<field name="delivery"/>
+                					<field name="sales" readonly="1"/>
+                					<field name="pump_test" readonly="1"/>
+                					<field name="closing_book" readonly="1"/>
+                					<field name="closing_gauge" readonly="1"/>
+                					<field name="variance" readonly="1"/>
+                					<field name="var_percent" readonly="1"/>
+                					<field name="water_level" readonly="1"/>
+                					<field name="temp" readonly="1"/>
+                					<field name="gauge" readonly="1"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_fuel_delivery_report" model="ir.actions.act_window">
+            <field name="name">Fuel Delivery</field>
+            <field name="res_model">fuel.delivery.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_fuel_delivery_report"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_fuel_delivery_report" id="menu_fuel_delivery_report"
+            parent="reconciliations_menu" sequence="2"/>
+            
+</odoo> 

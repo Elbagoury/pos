@@ -1,0 +1,401 @@
+<odoo>
+	
+	<record id="view_employee_category_form_inherit" model="ir.ui.view">
+		<field name="name">view.employee.category.form.inherit</field>
+		<field name="model">hr.employee.category</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="hr.view_employee_category_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='name']" position="replace">
+				<field name="name" string="Employee Category"/>
+			</xpath>
+		</field>
+	</record>
+	
+	<record id="view_employee_category_list_inherit" model="ir.ui.view">
+		<field name="name">hr.employee.category.list.inherit</field>
+        <field name="model">hr.employee.category</field>
+        <field eval="8" name="priority"/>
+		<field name="inherit_id" ref="hr.view_employee_category_list"/>
+        <field name="arch" type="xml">
+			<xpath expr="//field[@name='name']" position="replace">
+				<field name="name" string="Employee Category"/>
+			</xpath>
+        </field>
+   </record>
+	
+	<record id="view_categ_form" model="ir.actions.act_window">
+		<field name="name">Employee Category</field>
+        <field name="res_model">hr.employee.category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+	<menuitem id="menu_inma_master" icon="terp-hr" name="Master" sequence="10" 	
+	groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+	<menuitem id="inma_configuration_master" icon="terp-hr" name="Configuration" sequence="3" parent="menu_inma_master"
+        groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+        <menuitem id="menu_view_employee_category_form" action="view_categ_form" parent="inma_configuration_master"
+        groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge" sequence="2"/>
+<!--
+        <menuitem action="base.action_res_partner_bank_account_form" id="menu_action_res_partner_bank_form" parent="inma_configuration_master"               
+        groups="inma_group_admin,inma_group_manager" sequence="1"/>
+-->
+        <menuitem action="hr.action_hr_job" id="menu_inma_admin_job" parent="inma_configuration_master" name="Designation" sequence="7" 
+    	groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>	
+	<menuitem id="inma_transtaction_master" icon="terp-hr" name="Transtaction" sequence="10" parent="menu_inma_master"
+        groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+
+<!--Project Master-->
+
+
+	<record id="project_name_form" model="ir.ui.view">
+        <field name="name">project.name.form</field>
+        <field name="model">project.name</field>
+        <field name="arch" type="xml">
+            <form string="Project" version="7.0">            	
+                <group>
+                  	<group>
+						<field name="name" placeholder="Mandatory" required="1"/>
+						<field name="code" placeholder="Mandatory" required="1"/>	                    
+						<field name="address"/>	                    
+              		</group>
+              		<group>
+						<field name="year"/>	
+						<field name="upload"/>	
+              		</group>
+                </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="project_name_tree" model="ir.ui.view">
+        <field name="name">project.name.tree</field>
+        <field name="model">project.name</field>            
+        <field name="arch" type="xml">
+        	<tree string="Project">                
+             	<field name="name"/>
+				<field name="year"/>		                    
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="project_name_action" model="ir.actions.act_window">
+        <field name="name">Inma Project</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.name</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="project_name_tree"/>           
+    </record>
+        
+    <menuitem action="project_name_action" id="menu_project_name_action" parent="inma_configuration_master" sequence="3" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+	
+
+<!--City Master-->
+
+<record id="res_city_form" model="ir.ui.view">
+        <field name="name">res.city.form</field>
+        <field name="model">res.city</field>
+        <field name="arch" type="xml">
+            <form string="City" version="7.0">            	
+                <group>
+                  	<group>
+						<field name="name" placeholder="Mandatory" required="1"/>
+						<field name="state_id" placeholder="Mandatory" required="1"/>		                    
+              		</group>
+                </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="res_city_tree" model="ir.ui.view">
+        <field name="name">res.city.tree</field>
+        <field name="model">res.city</field>            
+        <field name="arch" type="xml">
+        	<tree string="City">                
+             	<field name="name"/>
+				<field name="state_id"/>		                    
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="res_city_action" model="ir.actions.act_window">
+        <field name="name">City</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.city</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="res_city_tree"/>           
+    </record>
+        
+    <menuitem action="res_city_action" id="menu_res_city_action" parent="inma_configuration_master" sequence="6" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+
+<!--Bloodgroup Master-->
+
+
+<record id="employee_bloodgroup_form" model="ir.ui.view">
+        <field name="name">employee.bloodgroup.form</field>
+        <field name="model">employee.bloodgroup</field>
+        <field name="arch" type="xml">
+            <form string="Blood Group" version="7.0">            	
+               <group>
+                      <field name="name" placeholder="Mandatory" required="1"/>
+                  </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="employee_bloodgroup_tree" model="ir.ui.view">
+        <field name="name">employee.bloodgroup.tree</field>
+        <field name="model">employee.bloodgroup</field>            
+        <field name="arch" type="xml">
+        	<tree string="Blood Group">                
+             	<field name="name"/>
+
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="employee_bloodgroup_action" model="ir.actions.act_window">
+        <field name="name">Blood Group</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">employee.bloodgroup</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="employee_bloodgroup_tree"/>           
+    </record>
+        
+    <menuitem action="employee_bloodgroup_action" id="menu_employee_bloodgroup_action" parent="inma_configuration_master" sequence="4" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+
+<!--Relation Master-->
+
+
+    <record id="hr_employee_relation_form" model="ir.ui.view">
+        <field name="name">hr.employee.relation.form</field>
+        <field name="model">hr.employee.relation</field>
+        <field name="arch" type="xml">
+            <form string="Relation" version="7.0">            	
+               <group>
+                      <field name="name" placeholder="Mandatory" required="1"/>
+                  </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="hr_employee_relation_tree" model="ir.ui.view">
+        <field name="name">hr.employee.relation.tree</field>
+        <field name="model">hr.employee.relation</field>            
+        <field name="arch" type="xml">
+        	<tree string="Relation">                
+             	<field name="name"/>
+
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="hr_employee_relation_action" model="ir.actions.act_window">
+        <field name="name">Relation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.employee.relation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="hr_employee_relation_tree"/>           
+    </record>
+        
+    <menuitem action="hr_employee_relation_action" id="menu_hr_employee_relation_action" parent="inma_configuration_master" sequence="5" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+<!--Detail of Item Issued Master-->
+<!--
+
+    <record id="hr_employee_relation_form" model="ir.ui.view">
+        <field name="name">hr.employee.relation.form</field>
+        <field name="model">hr.employee.relation</field>
+        <field name="arch" type="xml">
+            <form string="Relation" version="7.0">            	
+               <group>
+                      <field name="name"/>
+                  </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="hr_employee_relation_tree" model="ir.ui.view">
+        <field name="name">hr.employee.relation.tree</field>
+        <field name="model">hr.employee.relation</field>            
+        <field name="arch" type="xml">
+        	<tree string="Relation">                
+             	<field name="name"/>
+
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="hr_employee_relation_action" model="ir.actions.act_window">
+        <field name="name">Relation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.employee.relation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="hr_employee_relation_tree"/>           
+    </record>
+        
+    <menuitem action="hr_employee_relation_action" id="menu_hr_employee_relation_action" parent="inma_configuration_master" sequence="5" 
+		groups="inma_group_admin,inma_group_manager"/>
+-->
+
+<!--Mould Master-->
+
+        <record id="mould_master_form" model="ir.ui.view">
+        <field name="name">mould.master.form</field>
+        <field name="model">mould.master</field>
+        <field name="arch" type="xml">
+            <form string="Mould" version="7.0">            	
+               <group>
+                      <field name="name" placeholder="Mandatory" required="1"/>
+             	      <field name="mould_type" required="1"/>
+                  </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="mould_master_tree" model="ir.ui.view">
+        <field name="name">mould.master.tree</field>
+        <field name="model">mould.master</field>            
+        <field name="arch" type="xml">
+        	<tree string="Mould">                
+             	<field name="name"/> 
+             	<field name="mould_type"/>
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="mould_master_action" model="ir.actions.act_window">
+        <field name="name">Mould</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mould.master</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="mould_master_tree"/>           
+    </record>
+        
+    <menuitem action="mould_master_action" id="menu_mould_master_action" parent="inma_transtaction_master" sequence="8" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+<!--Business Structure-->
+
+        <record id="business_structure_form" model="ir.ui.view">
+        <field name="name">business.structure.form</field>
+        <field name="model">business.structure</field>
+        <field name="arch" type="xml">
+            <form string="Business Structure" version="7.0">            	
+               <group>
+                      <field name="name" placeholder="Mandatory" required="1"/>
+                  </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="business_structure_tree" model="ir.ui.view">
+        <field name="name">business.structure.tree</field>
+        <field name="model">business.structure</field>            
+        <field name="arch" type="xml">
+        	<tree string="Business Structure">                
+             	<field name="name"/> 
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="business_structure_action" model="ir.actions.act_window">
+        <field name="name">Business Structure</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">business.structure</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="business_structure_tree"/>           
+    </record>
+        
+    <menuitem action="business_structure_action" id="menu_business_structure_action" parent="inma_transtaction_master" sequence="8" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+
+<!--Nature Business Structure-->
+
+        <record id="nature_business_structure_form" model="ir.ui.view">
+        <field name="name">nature.business.structure.form</field>
+        <field name="model">nature.business.structure</field>
+        <field name="arch" type="xml">
+            <form string="Nature Business Structure" version="7.0">            	
+               <group>
+                      <field name="name" placeholder="Mandatory" required="1"/>
+                  </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="nature_business_structure_tree" model="ir.ui.view">
+        <field name="name">nature.business.structure.tree</field>
+        <field name="model">nature.business.structure</field>            
+        <field name="arch" type="xml">
+        	<tree string="Nature Business Structure">                
+             	<field name="name"/> 
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="nature_business_structure_action" model="ir.actions.act_window">
+        <field name="name">Nature Business Structure</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">nature.business.structure</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="nature_business_structure_tree"/>           
+    </record>
+        
+    <menuitem action="nature_business_structure_action" id="menu_nature_business_structure_action" parent="inma_transtaction_master" sequence="11" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+<!--Type of Material-->
+
+        <record id="type_of_material_form" model="ir.ui.view">
+        <field name="name">type.of.material.form</field>
+        <field name="model">type.of.material</field>
+        <field name="arch" type="xml">
+            <form string="Type of Material" version="7.0">            	
+               <group>
+                      <field name="name" placeholder="Mandatory" required="1"/>
+                  </group>
+            </form>
+        </field>
+    </record>  
+        
+    <record id="type_of_material_tree" model="ir.ui.view">
+        <field name="name">type.of.material.tree</field>
+        <field name="model">type.of.material</field>            
+        <field name="arch" type="xml">
+        	<tree string="Type of Material">                
+             	<field name="name"/> 
+    		</tree>
+        </field>
+    </record>
+        
+    <record id="type_of_material_action" model="ir.actions.act_window">
+        <field name="name">Type of Material</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">type.of.material</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="type_of_material_tree"/>           
+    </record>
+        
+    <menuitem action="type_of_material_action" id="menu_type_of_material_action" parent="inma_transtaction_master" sequence="12" 
+		groups="inma_group_admin,inma_group_manager,inma_group_store_in_charge"/>
+
+</odoo>

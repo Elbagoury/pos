@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <report 
+            string="INMA Purchase Order" 
+            id="action_report_inma_purchase_order" 
+            model="purchase.order" 
+            report_type="qweb-pdf"
+            name="inma.report_purchaseorder_document" 
+            file="inma.report_purchaseorder_document" 
+	    menu="False"
+        />
+
+      <report 
+            string="INMA Request for Quotation" 
+            id="report_inma_purchase_quotation" 
+            model="purchase.order" 
+            report_type="qweb-pdf"
+            name="inma.report_purchasequotation" 
+            file="inma.report_purchasequotation"
+	    menu="False"
+        />
+
+	<report 
+            string="INMA SRM" 
+            id="report_srm" 
+            model="stock.requirement.memo" 
+            report_type="qweb-pdf"
+            name="inma.report_srm_document" 
+            file="inma.report_srm_document"
+	    menu="False"
+        />
+        
+         <report 
+            string="INMA PURCHASE ORDER QUOTATION" 
+            id="report_inma_purchaseorder_quotation" 
+            model="purchase.order" 
+            report_type="qweb-pdf"
+            name="inma.report_purchaseorderquotation" 
+            file="inma.report_purchaseorderquotation"
+	    menu="False"
+        />
+        
+        <report 
+            string="vendor Bill" 
+            id="report_inma_vendor_bill" 
+            model="account.invoice" 
+            report_type="qweb-pdf"
+            name="inma.report_invoice" 
+            file="inma.report_invoice"
+	    menu="True"
+        />
+</odoo>
+
+

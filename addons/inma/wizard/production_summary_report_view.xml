@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_production_summary_report" model="ir.ui.view">
+            <field name="name">view.production.summary.report.form</field>
+            <field name="model">production.summary.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Production Summary Report" create="false" edit="false" delete="false">
+					<group>
+						<group>	
+							<field name="date_from"/>
+						</group>
+						<group>	
+							<field name="date_to"/>
+						</group>
+					</group>
+
+                	<notebook>
+                		<page string="Production Summary">
+							<field name="production_summary_ids">
+								<tree create="false" edit="false" delete="false">	
+									<field name="rfi_no"/>
+                					<field name="date"/>
+                					<field name="mould_id"/>
+                					<field name="ring_id_left"/>
+                					<field name="ring_id_right"/>
+                					<field name="ring_produced_left"/>
+                					<field name="ring_produced_right"/>
+                					<field name="cumalative_count_left"/>
+                					<field name="cumalative_count_right"/>
+                					<field name="permanent_ring"/>
+                					<field name="temporary_ring"/>
+                					<field name="approved_ring"/>
+                					<field name="dispatched_ring"/>
+                					<field name="mf_date"/>
+                					<field name="approved_date"/>
+                					<field name="dispatched_date"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+						<footer>
+							<button name="print_report" string="Print" class="oe_highlight" type="object"/>    
+                        	<button string="Cancel" class="oe_link" special="cancel"/>                        	
+                    	</footer>                	
+               </form>
+            </field>
+        </record>
+
+		<record id="action_production_summary_report" model="ir.actions.act_window">
+            <field name="name">Production Summary</field>
+            <field name="res_model">production.summary.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="target">new</field>            
+            <field name="view_id" ref="view_production_summary_report"/>
+        </record>
+
+        <menuitem action="action_production_summary_report" id="menu_production_summary_report"
+            parent="mrp.menu_mrp_manufacturing" sequence="30"/>
+            
+</odoo>

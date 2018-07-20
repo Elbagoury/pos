@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="view_day_summary_report" model="ir.ui.view">
+            <field name="name">view.day.summary.report</field>
+            <field name="model">day.summary.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Day Summary Report" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="date"/>
+							<field name="day_shift"/>
+						</group>	
+						<group>
+							<field name="shift_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('day_shift','!=', 'shift')]}"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Day Summary Details">
+							<field name="day_summary_ids" nolabel="1" context="{'group_by': 'shift_id' }" widget="one2many_list">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="shift_id"/>
+                					<field name="pos_categ_id"/>
+                					<field name="product_id"/>
+                					<field name="total"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+        
+
+        <record id="view_day_summary_form" model="ir.ui.view">
+		<field name="name">view.day.summary.form</field>
+        <field name="model">day.summary.line.report</field>            
+        <field name="arch" type="xml">
+			<form string="Day Summary Report" create="false" edit="false" >
+				<field name="shift_id"/>
+				<field name="pos_categ_id"/>
+				<field name="product_id"/>
+				<field name="total"/>
+            </form>
+         </field>
+	</record> 
+	
+
+	<record id="view_day_summary_filter" model="ir.ui.view">
+    	<field name="name">day.summary.filter</field>
+        <field name="model">day.summary.line.report</field>
+        <field name="arch" type="xml">
+        	<search string="Day Summary">
+				
+				 <group expand="0" string="Group By...">   
+					<filter><field name="shift_id" context="{'group_by':'shift_id'}"/>     </filter>                
+                 </group>
+            </search>
+        </field>
+    </record>
+
+		<record id="action_day_summary_report" model="ir.actions.act_window">
+            <field name="name">Day Summary</field>
+            <field name="res_model">day.summary.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_day_summary_report"/>
+            <field name="view_mode">tree,form</field>
+<!--
+			<field name="domain">[]</field>
+			<field name="context">{'search_default_shift_id':1}</field>
+			<field name="search_view_id" ref="view_day_summary_filter"/> 
+-->
+            <field name="target">new</field>
+        </record>
+        
+        <record id="action_day_summary_line_report" model="ir.actions.act_window">
+            <field name="name">Day Summary</field>
+            <field name="res_model">day.summary.line.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+			<field name="domain">[]</field>
+			<field name="context">{'search_default_shift_id':1}</field>
+			<field name="search_view_id" ref="view_day_summary_filter"/> 
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_day_summary_report" id="menu_day_summary_report"
+            parent="reconciliations_menu" sequence="6"/>
+            
+</odoo> 

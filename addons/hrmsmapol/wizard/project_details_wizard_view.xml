@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="view_project_details" model="ir.ui.view">
+            <field name="name">project.details.form</field>
+            <field name="model">project.details</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Project Details" create="false" edit="false" >
+                		<group>		
+							<field name="category"/>
+							<field name="project_id" attrs="{'invisible':[('category','!=','project_wise')]}"/>
+							<field name="user_id" attrs="{'invisible':[('category','!=','employee_wise')]}"/>
+							<field name="date" attrs="{'invisible':[('category','!=','employee_wise')]}"/>	
+						</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Task Details" attrs="{'invisible':[('category','!=','project_wise')]}">
+							<field name="project_task_ids">
+								<tree  create="false" edit="false" delete="false">	
+                					<field name="user_id"/>
+                					<field name="project_task_id"/>
+                					<field name="state"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<notebook>
+                		<page string="Employee Task Details" attrs="{'invisible':[('category','!=','employee_wise')]}">
+							<field name="employee_project_task_ids">
+								<tree create="false" edit="false" delete="false"> 	
+									<field name="project_id"/>
+									<field name="project_task_id"/>
+									<field name="description"/>
+									<field name="duration"/>
+								</tree>
+							</field>
+                		</page>                	
+                	</notebook>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_project_details" model="ir.actions.act_window">
+            <field name="name">Project Task Details</field>
+            <field name="res_model">project.details</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_project_details"/>
+            <field name="target">inline</field>
+            <field name="help">Project Task Details</field>
+        </record>
+
+        <menuitem action="action_project_details" id="menu_project_details"
+            parent="project.menu_project_report" sequence="13"/>
+            
+        <!-- Employee Leave Report -->
+        <record id="view_leave_details" model="ir.ui.view">
+            <field name="name">employee.absent.list.form</field>
+            <field name="model">employee.absent.list</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Leave Details" create="false" edit="false" >
+                		<group>		
+							<field name="employee_id"/>
+							<field name="date_from"/>
+							<field name="date_to"/>
+						</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Leave Details">
+							<field name="employee_leave_ids">
+								<tree create="false" edit="false" delete="false"> 	
+									<field name="leave_date"/>
+									<field name="reason"/>
+								</tree>
+							</field>
+                		</page>                	
+                	</notebook>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_leave_details" model="ir.actions.act_window">
+            <field name="name">Employee Leave Details</field>
+            <field name="res_model">employee.absent.list</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_leave_details"/>
+            <field name="target">inline</field>
+            <field name="help">Employee Leave Details</field>
+        </record>
+        <menuitem action="action_leave_details" id="menu_leave_details"
+            parent="project.menu_project_report" sequence="14"/>
+
+</odoo>           

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+
+	<data noupdate="0">
+	         
+	        <!-- MAPOL STAFF -->
+	       <record model="res.groups" id="mapol_group_staff">
+				<field name="name">MAPOL / Staff</field>
+				<field name="category_id" ref="base.module_category_human_resources"/>
+		   </record>
+	          
+	       
+	        <!-- MAPOL MANAGEMENT -->
+	       <record model="res.groups" id=" mapol_group_management">
+				<field name="name">MAPOL / Management</field>
+				<field name="category_id" ref="base.module_category_human_resources"/>
+		   </record>
+
+		      	   
+		   <!-- MAPOL ADMIN -->
+	       <record model="res.groups" id=" mapol_group_admin">
+				<field name="name">MAPOL / Admin</field>
+				<field name="category_id" ref="base.module_category_human_resources"/>
+		   </record>		   		      		   	   
+		   
+		   <!-- MAPOL HIDDEN -->
+	       <record model="res.groups" id=" mapol_group_hidden">
+				<field name="name">MAPOL / Hidden</field>
+				<field name="category_id" ref="base.module_category_human_resources"/>
+		   </record>
+		   		   
+		  
+		   
+            
+		   	   		   	   		   	            	   		   	   
+		   	   
+		  
+           
+    <!-- Staff Rules -->
+    <record model="ir.rule" id="hr_employee_rule">
+        <field name="name"> mapol hr.employee - Employee</field>
+        <field name="model_id" ref="model_hr_employee"/>
+        <field name="domain_force">[('user_id','=',user.id)]</field>
+    	<field name="groups" eval="[(4, ref('mapol_group_staff'))]"/>
+        <field eval="0" name="perm_unlink"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_read"/>
+        <field eval="0" name="perm_create"/>
+    </record> 
+    
+  
+	    
+	</data>
+</openerp>

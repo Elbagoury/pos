@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="view_attendance_import" model="ir.ui.view">
+            <field name="name">attendance.import.report.form</field>
+            <field name="model">attendance.import</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Go ahead.." version="7.0">              	
+                	<button name="button_confirm" string="Confirm" type="object" class="oe_highlight"/>										
+               </form>
+            </field>
+        </record>
+
+		<record id="action_attendance_import" model="ir.actions.act_window">
+            <field name="name">Attendance Import</field>
+            <field name="res_model">attendance.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_attendance_import"/>
+            <field name="help">Attendance Import</field>
+        </record>
+
+        <menuitem action="action_attendance_import" id="menu_attendance_import"
+            parent="menu_hr_attendance_manage_attendances" sequence="14"/>
+
+</odoo>           

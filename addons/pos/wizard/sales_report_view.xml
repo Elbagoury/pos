@@ -1,0 +1,50 @@
+<odoo>
+    	
+    	<record id="view_sales_report" model="ir.ui.view">
+            <field name="name">view.sales.report</field>
+            <field name="model">sales.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Sales" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="date"/>
+							<field name="day_shift"/>
+							<field name="shift_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('day_shift','!=', 'shift')]}"/>
+						</group>	
+						<group>
+							<field name="product_category"/>
+							<field name="pos_category_id" options='{"no_open": True, "no_create": True}' attrs="{'invisible': [('product_category','!=', 'category')]}"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Sales Report">
+							<field name="sales_ids" nolabel="1">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="product_id"/>
+                					<field name="value"/>
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_sales_report" model="ir.actions.act_window">
+            <field name="name">Sales</field>
+            <field name="res_model">sales.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_sales_report"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_sales_report" id="menu_sales_report"
+            parent="reconciliations_menu" sequence="3"/>
+            
+</odoo> 
