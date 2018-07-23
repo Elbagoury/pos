@@ -39,7 +39,7 @@ class DailyPlanningSchedule(models.Model):
 	shiftorder_done_count = fields.Integer('# Done Shift Schedule', compute='_compute_shiftorder_done_count')
 	
 	_sql_constraints = [
-        ('date_uniq', 'unique(name)', 'Already Same date Daily planning created'),
+        ('date_project_id_uniq', 'unique(name,project_id)', 'Already data created in same date'),
         ]
 	
 	@api.model
@@ -56,13 +56,15 @@ class DailyPlanningSchedule(models.Model):
 				concrete_plan.create({
 					'plan_date':self.name,
 					'daily_plan_id':self.id,
-					'concrete_plan_state':'progress'
+					'concrete_plan_state':'progress',
+					'project_id':self.project_id.id,
 				})
 				
 				actual_plan.create({
 					'plan_date':self.name,
 					'daily_plan_id':self.id,
-					'concrete_plan_state':'progress'
+					'concrete_plan_state':'progress',
+					'project_id':self.project_id.id,
 				})
 				
 			self.write({'daily_plan_state':'progress'})
@@ -112,6 +114,7 @@ class concrete_planning(models.Model):
 	concrete_plan_state = fields.Selection([('progress', 'In Progress'),('done', 'Finished')], string='Status')
 	file_f = fields.Binary("File", readonly=True)	
 	file_name = fields.Char("File Name",size=128, readonly=True)
+	project_id = fields.Many2one('project.name', 'Project Name')
 	
 	@api.onchange('ring_count')
 	def onchange_ring_count(self):
@@ -119,12 +122,12 @@ class concrete_planning(models.Model):
 			serial = 1
 			planning_schedule_dict = []
 			product_list = []
-			for product_t in self.env['product.template'].search([('product_type','=','segment')]):
+			for product_t in self.env['product.template'].search([('product_type','=','segment'),('active','=',True),('project_id','=',self.project_id.id)]):
 				for product in self.env['product.product'].search([('product_tmpl_id','=',product_t.id)]):
 					product_list.append(product.id)
 			partial_ids = ()
 			#find not completed ring ids
-			actual_plan_ids = self.env['actual.planning'].search([],order='id desc')
+			actual_plan_ids = self.env['actual.planning'].search([('project_id','=',self.project_id.id)],order='id desc')
 			for actual_plan in actual_plan_ids:
 				if actual_plan.actual_concrete_schedule_ids:
 					partial_ids = self.env['actual.concrete.schedule'].search([('actual_plan_id','=',actual_plan.id),('state','=','archived')])
@@ -145,17 +148,20 @@ class concrete_planning(models.Model):
 					serial += 1
 
 			#Ring id generation
-			last_ring_id = self.env['actual.concrete.schedule'].search([('state','=','done')],order='ring_id desc', limit=1)
-			print last_ring_id
+			last_ring_id = ()
+			actual_plan_ids = self.env['actual.planning'].search([('project_id','=',self.project_id.id)],order='id desc')
+			for actual_id in actual_plan_ids:
+				if actual_id.actual_concrete_schedule_ids:
+					last_ring_id = self.env['actual.concrete.schedule'].search([('actual_plan_id','=',actual_id.id),('state','=','done')],order='id desc', limit=1)
+					break
 			if last_ring_id:
 				
 				ring_count = last_ring_id.ring_id
-				print ring_count, type(ring_count)
 				for count in range(1, self.ring_count+1):
 					ring_count = int(ring_count) + 1
 					
 					if str(ring_count) not in ring_count_list:
-						planning_schedule_dict.append((0, 0, {'s_no': serial, 'ring_id': ring_count,'shift':self.name,'segment_id':product_list}))
+						planning_schedule_dict.append((0, 0, {'s_no': serial, 'ring_id': str(ring_count),'shift':self.name,'segment_id':product_list}))
 						serial += 1	
 			else:
 				for count in range(1, self.ring_count+1):
@@ -166,14 +172,14 @@ class concrete_planning(models.Model):
 	@api.onchange('name')
 	def onchange_shift_name(self):
 		if self.name:
-			same_shift = self.env['concrete.planning'].search([('plan_date','=',self.plan_date),('name','=',self.name.id), ('id','!=',self._origin.id)])
+			same_shift = self.env['concrete.planning'].search([('plan_date','=',self.plan_date),('name','=',self.name.id), ('id','!=',self._origin.id),('project_id','=',self.project_id.id)])
 			if same_shift:
 				raise ValidationError(_("Given shift created for 1 time per day"))
 				
 	@api.constrains('name')
 	def constrains_shift_name(self):
 		if self.name:
-			same_shift = self.env['concrete.planning'].search([('plan_date','=',self.plan_date),('name','=',self.name.id), ('id','!=',self.id)])
+			same_shift = self.env['concrete.planning'].search([('plan_date','=',self.plan_date),('name','=',self.name.id), ('id','!=',self.id),('project_id','=',self.project_id.id)])
 			if same_shift:
 				raise ValidationError(_("Given shift created for 1 time per day"))
 			
@@ -346,7 +352,7 @@ class concrete_planning_schedule(models.Model):
 	remarks = fields.Text("Remarks")
 	shift = fields.Many2one('shift.master','Shift')
 	concrete_plan_id = fields.Many2one('concrete.planning', "Concrete Planning", ondelete='cascade')
-	segment_id = fields.Many2many('product.product','segment_plan_rel','product_id','plan_id','Segment')
+	segment_id = fields.Many2many('product.product','segment_product_plan_rel','product_id','plan_id','Segment')
         	
 	# @api.onchange('cage_fixing_start_time')
 	# def onchange_cage_fixing_start_time(self):
@@ -379,14 +385,15 @@ class actual_planning(models.Model):
 	actual_planning_log = fields.One2many("actual.planning.log","actual_planning_id", "Change Log")
 	file_f = fields.Binary("File", readonly=True)	
 	file_name = fields.Char("File Name",size=128, readonly=True)	
+	project_id = fields.Many2one('project.name', 'Project Name')
 
 	@api.onchange('name')
 	def onchange_shift(self):
 		if self.name:
-			concrete_plan_id = self.env['concrete.planning'].search([('plan_date','=',self.plan_date),('name','=',self.name.id),('concrete_plan_state','=','done')])
+			concrete_plan_id = self.env['concrete.planning'].search([('plan_date','=',self.plan_date),('name','=',self.name.id),('concrete_plan_state','=','done'),('project_id','=',self.project_id.id)])
 			if concrete_plan_id:
 				self.ring_count = concrete_plan_id.ring_count
-				ring_ids = self.env['concrete.planning.schedule'].search([('concrete_plan_id','=',concrete_plan_id.id)], order='ring_id asc')
+				ring_ids = self.env['concrete.planning.schedule'].search([('concrete_plan_id','=',concrete_plan_id.id)], order='id asc')
 				actual_schedule_dict = []
 				daily_concrete_dict = []
 				count = 0
@@ -1005,11 +1012,12 @@ class production_testing(models.Model):
 	 approved_ring_count = fields.Integer(compute='_get_ring_count',string='Approved Ring')
 	 dispatched_ring_count = fields.Integer(compute='_get_ring_count',string='Dispatched Ring')
 	 production_testing_ids = fields.One2many('production.testing.line','production_testing_id','Production Testing')
-	 
-	 @api.onchange('date')
+	 project_id = fields.Many2one('project.name', 'Project Name') 
+
+	 @api.onchange('date','project_id')
 	 def onchange_date(self):
-		 if self.date:
-			actual_plan_ids = self.env['actual.planning'].search([('plan_date','=',self.date)])
+		 if self.date and self.project_id:
+			actual_plan_ids = self.env['actual.planning'].search([('plan_date','=',self.date),('project_id','=',self.project_id.id)])
 			actual_schedule = self.env['actual.concrete.schedule'].search([('actual_plan_id','in',actual_plan_ids.ids),('state','=','done')], order='ring_id asc')
 			production_testing_dict = []
 			for actual in actual_schedule:
@@ -1089,7 +1097,7 @@ class concrete_actual_planning(models.Model):
 	remarks = fields.Text("Remarks")
 	shift = fields.Many2one('shift.master','Shift')
 	actual_plan_id = fields.Many2one('actual.planning', "Concrete Planning", ondelete='cascade')
-	segment_id = fields.Many2many('product.product','segment_plan_rel','product_id','plan_id','Segment')
+	segment_id = fields.Many2many('product.product','segment_concrete_plan_rel','product_id','plan_id','Segment')
 
 class daily_planning_schedule_log(models.Model):
 	_name = "daily.planning.schedule.log"    

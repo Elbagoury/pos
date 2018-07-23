@@ -670,6 +670,7 @@ class ProductTemplate(models.Model):
 	category_ids = fields.Many2many('product.category.tag', 'product_category_tag_rel', 'product_id', 'category_id', string='Tags')
 	product_type = fields.Selection([('all','All'),('segment','Segment')], 'Product Tag')
 	vendor_list_id = fields.One2many('vendor.list','product_id','Vendor')
+	project_id = fields.Many2one('project.name', 'Project Name')
 	
 	@api.one
 	@api.constrains('inma_code_no')

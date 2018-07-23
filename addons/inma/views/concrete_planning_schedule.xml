@@ -13,6 +13,7 @@
 				</header>
 				<group>
 					<field name="plan_date" readonly="1"/>
+					<field name="project_id" readonly="1"/>
 					<field name="name" required="1" />
 					<field name="ring_count" required="1"/>
 				</group>
@@ -98,7 +99,8 @@ class="oe_highlight"/>
 				<group>
 					<field name="plan_date" readonly="1"/>
 					<field name="name" required="1" />
-					<field name="ring_count" readonly="1"/>
+					<field name="project_id" readonly="1"/>
+					<field name="ring_count" readonly="1" invisible="1"/>
 					<field name="actual_plan_state" invisible="1"/>
 				</group>
 				<notebook>
@@ -119,7 +121,7 @@ class="oe_highlight"/>
 								<field name="steam_end_time" widget="float_time"/>
 								<field name="demoudling"/>
 								<field name="state" required="1"/>
-								<field name="remarks" attrs="{'required':[('state','=', 'archived')], 'invisible':[('state','!=', 'archived')]}"/>
+								<field name="remarks" attrs="{'required':[('state','=', 'archived')]}"/>
 							</tree>
 						</field>
 					</page>
@@ -166,7 +168,6 @@ class="oe_highlight"/>
 			<tree string="Actual Production" delete="0" create="0">
 				<field name="plan_date"/>
 				<field name="name"/>
-				<field name="ring_count"/> 
             </tree>
          </field>
 	</record>
@@ -225,7 +226,7 @@ class="oe_highlight"/>
 						</group>
 						<group>
 							<field name="location_id" attrs="{'readonly': [('daily_plan_state', 'not in', ('pending', 'ready'))]}" domain="[('usage','=','internal')]" options='{"no_open": True, "no_create": True}'/>
-							<field name="project_id" attrs="{'readonly': [('daily_plan_state', 'not in', ('pending', 'ready'))]}" options='{"no_open": True, "no_create": True}'/>
+							<field name="project_id" attrs="{'readonly': [('daily_plan_state', 'not in', ('pending', 'ready'))]}" options='{"no_open": True, "no_create": True}' required="1"/>
 						</group>
 					</group>
 				</sheet>
@@ -544,6 +545,7 @@ class="oe_highlight"/>
 					<group>
 						<field name="date"/>
 						<field name="ring_master_id"/>
+						<field name="project_id"/>
 					</group>
 					<group>
 						<field name="permanant_ring_count"/>

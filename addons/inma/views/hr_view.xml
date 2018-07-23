@@ -313,6 +313,7 @@
 							<field name="rol_in_unit"/>
 							<field name="rol_in_days"/>
 							<field name="lead_time"/>
+							<field name="project_id"/>
 						</group>
 						<group>
 							<field name="approved_manufacturer_ids" widget="many2many_tags"/>
