@@ -7,242 +7,267 @@ odoo.define('pos_promotion', function (require) {
     var round_pr = utils.round_precision;
     var time = require('web.time');
 
-    models.load_models([
-        {
-            model: 'pos.promotion',
-            condition: function (self) {
-                return self.config.promotion;
-            },
-            fields: [],
-            domain: function (self) {
-                return [
-                    ['id', 'in', self.config.promotion_ids],
-                    ['start_date', '<=', time.date_to_str(new Date()) + " " + time.time_to_str(new Date())],
-                    ['end_date', '>=', time.date_to_str(new Date()) + " " + time.time_to_str(new Date())],
-                ]
-            },
-            context: { 'pos': true },
-            loaded: function (self, promotions) {
-                self.promotions = promotions;
-                self.promotion_by_id = {};
-                self.promotion_ids = []
-                var i = 0;
-                while (i < promotions.length) {
-                    self.promotion_by_id[promotions[i].id] = promotions[i];
-                    self.promotion_ids.push(promotions[i].id);
-                    i++;
+    models.load_models([{
+        model: 'pos.promotion',
+        condition: function (self) {
+            return self.config.promotion;
+        },
+        fields: [],
+        domain: function (self) {
+            return [
+                ['id', 'in', self.config.promotion_ids],
+                ['start_date', '<=', time.date_to_str(new Date()) + " " + time.time_to_str(new Date())],
+                ['end_date', '>=', time.date_to_str(new Date()) + " " + time.time_to_str(new Date())],
+            ]
+        },
+        context: {
+            'pos': true
+        },
+        loaded: function (self, promotions) {
+            self.promotions = promotions;
+            self.promotion_by_id = {};
+            self.promotion_ids = []
+            var i = 0;
+            while (i < promotions.length) {
+                self.promotion_by_id[promotions[i].id] = promotions[i];
+                self.promotion_ids.push(promotions[i].id);
+                i++;
+            }
+        }
+    }, {
+        model: 'pos.promotion.discount.order',
+        fields: [],
+        condition: function (self) {
+            return self.config.promotion;
+        },
+        domain: function (self) {
+            return [
+                ['promotion_id', 'in', self.promotion_ids]
+            ]
+        },
+        context: {
+            'pos': true
+        },
+        loaded: function (self, discounts) {
+            console.log("pos.promotion.discount.order ", self, discounts);
+            self.promotion_discount_order_by_id = {};
+            self.promotion_discount_order_by_promotion_id = {};
+            discounts.map(discount => {
+                self.promotion_discount_order_by_id[discount.id] = discount;
+                if (!self.promotion_discount_order_by_promotion_id[discount.promotion_id[0]]) {
+                    self.promotion_discount_order_by_promotion_id[discount.promotion_id[0]] = [discount]
+                } else {
+                    self.promotion_discount_order_by_promotion_id[discount.promotion_id[0]].push(discount)
                 }
-            }
-        }, {
-            model: 'pos.promotion.discount.order',
-            fields: [],
-            condition: function (self) {
-                return self.config.promotion;
-            },
-            domain: function (self) {
-                return [['promotion_id', 'in', self.promotion_ids]]
-            },
-            context: { 'pos': true },
-            loaded: function (self, discounts) {
-                console.log("pos.promotion.discount.order ", self, discounts);
-                self.promotion_discount_order_by_id = {};
-                self.promotion_discount_order_by_promotion_id = {};
-                discounts.map(discount => {
-                    self.promotion_discount_order_by_id[discount.id] = discount;
-                    if (!self.promotion_discount_order_by_promotion_id[discount.promotion_id[0]]) {
-                        self.promotion_discount_order_by_promotion_id[discount.promotion_id[0]] = [discount]
-                    } else {
-                        self.promotion_discount_order_by_promotion_id[discount.promotion_id[0]].push(discount)
-                    }
-                })
-            }
-        }, {
-            model: 'pos.promotion.value.reduction.order',
-            fields: [],
-            condition: function (self) {
-                return self.config.promotion;
-            },
-            domain: function (self) {
-                return [['promotion_id', 'in', self.promotion_ids]]
-            },
-            context: { 'pos': true },
-            loaded: function (self, reductions) {
+            })
+        }
+    }, {
+        model: 'pos.promotion.value.reduction.order',
+        fields: [],
+        condition: function (self) {
+            return self.config.promotion;
+        },
+        domain: function (self) {
+            return [
+                ['promotion_id', 'in', self.promotion_ids]
+            ]
+        },
+        context: {
+            'pos': true
+        },
+        loaded: function (self, reductions) {
 
-                console.log("pos.promotion.value.reduction.order", self, reductions);
-                self.promotion_reduction_order_by_id = {};
-                self.promotion_reduction_order_by_promotion_id = {};
-                reductions.map(reduction => {
-                    self.promotion_reduction_order_by_id[reduction.id] = reduction;
-                    if (!self.promotion_reduction_order_by_promotion_id[reduction.promotion_id[0]]) {
-                        self.promotion_reduction_order_by_promotion_id[reduction.promotion_id[0]] = [reduction]
-                    } else {
-                        self.promotion_reduction_order_by_promotion_id[reduction.promotion_id[0]].push(reduction)
-                    }
-                })
+            console.log("pos.promotion.value.reduction.order", self, reductions);
+            self.promotion_reduction_order_by_id = {};
+            self.promotion_reduction_order_by_promotion_id = {};
+            reductions.map(reduction => {
+                self.promotion_reduction_order_by_id[reduction.id] = reduction;
+                if (!self.promotion_reduction_order_by_promotion_id[reduction.promotion_id[0]]) {
+                    self.promotion_reduction_order_by_promotion_id[reduction.promotion_id[0]] = [reduction]
+                } else {
+                    self.promotion_reduction_order_by_promotion_id[reduction.promotion_id[0]].push(reduction)
+                }
+            })
 
-                // self.promotion_by_category_id = {};
-                // var i = 0;
-                // while (i < discounts_category.length) {
-                //     self.promotion_by_category_id[discounts_category[i].category_id[0]] = discounts_category[i];
-                //     i++;
-                // }
-            }
-        }, {
-            model: 'pos.promotion.specified.goods.total',
-            fields: [],
-            condition: function (self) {
-                return self.config.promotion;
-            },
-            domain: function (self) {
-                return [['promotion_id', 'in', self.promotion_ids]]
-            },
-            context: { 'pos': true },
-            loaded: function (self, specified_goods) {
-                console.log("pos.promotion.specified.goods.total", self, specified_goods);
-
-                self.promotion_specified_goods_promotion_id = {};
-                specified_goods.map(specifiedGoods => {
-                    if (!self.promotion_specified_goods_promotion_id[specifiedGoods.promotion_id[0]]) {
-                        self.promotion_specified_goods_promotion_id[specifiedGoods.promotion_id[0]] = [specifiedGoods]
-                    } else {
-                        self.promotion_specified_goods_promotion_id[specifiedGoods.promotion_id[0]].push(specifiedGoods)
-                    }
-                })
-            }
-            // }, {
-            //     model: 'pos.promotion.gift.condition',
-            //     fields: [],
-            //     condition: function (self) {
-            //         return self.config.promotion;
-            //     },
-            //     domain: function (self) {
-            //         return [['promotion_id', 'in', self.promotion_ids]]
-            //     },
-            //     context: {'pos': true},
-            //     loaded: function (self, gift_conditions) {
-            //         self.promotion_gift_condition_by_promotion_id = {};
-            //         var i = 0;
-            //         while (i < gift_conditions.length) {
-            //             if (!self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]]) {
-            //                 self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]] = [gift_conditions[i]]
-            //             } else {
-            //                 self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]].push(gift_conditions[i])
-            //             }
-            //             i++;
-            //         }
-            //     }
-            // }, {
-            //     model: 'pos.promotion.gift.free',
-            //     fields: [],
-            //     condition: function (self) {
-            //         return self.config.promotion;
-            //     },
-            //     domain: function (self) {
-            //         return [['promotion_id', 'in', self.promotion_ids]]
-            //     },
-            //     context: {'pos': true},
-            //     loaded: function (self, gifts_free) {
-            //         self.promotion_gift_free_by_promotion_id = {};
-            //         var i = 0;
-            //         while (i < gifts_free.length) {
-            //             if (!self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]]) {
-            //                 self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]] = [gifts_free[i]]
-            //             } else {
-            //                 self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]].push(gifts_free[i])
-            //             }
-            //             i++;
-            //         }
-            //     }
-            // }, {
-            //     model: 'pos.promotion.discount.condition',
-            //     fields: [],
-            //     condition: function (self) {
-            //         return self.config.promotion;
-            //     },
-            //     domain: function (self) {
-            //         return [['promotion_id', 'in', self.promotion_ids]]
-            //     },
-            //     context: {'pos': true},
-            //     loaded: function (self, discount_conditions) {
-            //         self.promotion_discount_condition_by_promotion_id = {};
-            //         var i = 0;
-            //         while (i < discount_conditions.length) {
-            //             if (!self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]]) {
-            //                 self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]] = [discount_conditions[i]]
-            //             } else {
-            //                 self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]].push(discount_conditions[i])
-            //             }
-            //             i++;
-            //         }
-            //     }
-            // }, {
-            //     model: 'pos.promotion.discount.apply',
-            //     fields: [],
-            //     condition: function (self) {
-            //         return self.config.promotion;
-            //     },
-            //     domain: function (self) {
-            //         return [['promotion_id', 'in', self.promotion_ids]]
-            //     },
-            //     context: {'pos': true},
-            //     loaded: function (self, discounts_apply) {
-            //         self.promotion_discount_apply_by_promotion_id = {};
-            //         var i = 0;
-            //         while (i < discounts_apply.length) {
-            //             if (!self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]]) {
-            //                 self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]] = [discounts_apply[i]]
-            //             } else {
-            //                 self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]].push(discounts_apply[i])
-            //             }
-            //             i++;
-            //         }
-            //     }
-            // }, {
-            //     model: 'pos.promotion.price',
-            //     fields: [],
-            //     condition: function (self) {
-            //         return self.config.promotion;
-            //     },
-            //     domain: function (self) {
-            //         return [['promotion_id', 'in', self.promotion_ids]]
-            //     },
-            //     context: {'pos': true},
-            //     loaded: function (self, prices) {
-            //         self.promotion_price_by_promotion_id = {};
-            //         var i = 0;
-            //         while (i < prices.length) {
-            //             if (!self.promotion_price_by_promotion_id[prices[i].promotion_id[0]]) {
-            //                 self.promotion_price_by_promotion_id[prices[i].promotion_id[0]] = [prices[i]]
-            //             } else {
-            //                 self.promotion_price_by_promotion_id[prices[i].promotion_id[0]].push(prices[i])
-            //             }
-            //             i++;
-            //         }
+            // self.promotion_by_category_id = {};
+            // var i = 0;
+            // while (i < discounts_category.length) {
+            //     self.promotion_by_category_id[discounts_category[i].category_id[0]] = discounts_category[i];
+            //     i++;
             // }
         }
-    ]);
+    }, {
+        model: 'pos.promotion.specified.goods.total',
+        fields: [],
+        condition: function (self) {
+            return self.config.promotion;
+        },
+        domain: function (self) {
+            return [
+                ['promotion_id', 'in', self.promotion_ids]
+            ]
+        },
+        context: {
+            'pos': true
+        },
+        loaded: function (self, specified_goods) {
+            console.log("pos.promotion.specified.goods.total", self, specified_goods);
+            const promotionId = specified_goods[0].promotion_id[0];
+            self.promotion_specified_goods_promotion_id = {};
+            self.promotion_specified_goods_promotion_id[promotionId] = {};
+            specified_goods.map(specifiedGoods => {
+                // if (!self.promotion_specified_goods_promotion_id[specifiedGoods.promotion_id[0]]) {
+                let products = {};
+                specifiedGoods.product_ids.map(data => {
+                    products[data] = {
+                        id: data,
+                        count: 0
+                    }
+                });
+                self.promotion_specified_goods_promotion_id[promotionId][specifiedGoods.id] = {
+                    display_name: specifiedGoods.display_name,
+                    id: specifiedGoods.id,
+                    price: specifiedGoods.price,
+                    product_ids: products
+                }
+                // } else {
+                //     self.promotion_specified_goods_promotion_id[promotionId][specifiedGoods.id] = specifiedGoods
+                // }
+            })
+        }
+        // }, {
+        //     model: 'pos.promotion.gift.condition',
+        //     fields: [],
+        //     condition: function (self) {
+        //         return self.config.promotion;
+        //     },
+        //     domain: function (self) {
+        //         return [['promotion_id', 'in', self.promotion_ids]]
+        //     },
+        //     context: {'pos': true},
+        //     loaded: function (self, gift_conditions) {
+        //         self.promotion_gift_condition_by_promotion_id = {};
+        //         var i = 0;
+        //         while (i < gift_conditions.length) {
+        //             if (!self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]]) {
+        //                 self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]] = [gift_conditions[i]]
+        //             } else {
+        //                 self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]].push(gift_conditions[i])
+        //             }
+        //             i++;
+        //         }
+        //     }
+        // }, {
+        //     model: 'pos.promotion.gift.free',
+        //     fields: [],
+        //     condition: function (self) {
+        //         return self.config.promotion;
+        //     },
+        //     domain: function (self) {
+        //         return [['promotion_id', 'in', self.promotion_ids]]
+        //     },
+        //     context: {'pos': true},
+        //     loaded: function (self, gifts_free) {
+        //         self.promotion_gift_free_by_promotion_id = {};
+        //         var i = 0;
+        //         while (i < gifts_free.length) {
+        //             if (!self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]]) {
+        //                 self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]] = [gifts_free[i]]
+        //             } else {
+        //                 self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]].push(gifts_free[i])
+        //             }
+        //             i++;
+        //         }
+        //     }
+        // }, {
+        //     model: 'pos.promotion.discount.condition',
+        //     fields: [],
+        //     condition: function (self) {
+        //         return self.config.promotion;
+        //     },
+        //     domain: function (self) {
+        //         return [['promotion_id', 'in', self.promotion_ids]]
+        //     },
+        //     context: {'pos': true},
+        //     loaded: function (self, discount_conditions) {
+        //         self.promotion_discount_condition_by_promotion_id = {};
+        //         var i = 0;
+        //         while (i < discount_conditions.length) {
+        //             if (!self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]]) {
+        //                 self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]] = [discount_conditions[i]]
+        //             } else {
+        //                 self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]].push(discount_conditions[i])
+        //             }
+        //             i++;
+        //         }
+        //     }
+        // }, {
+        //     model: 'pos.promotion.discount.apply',
+        //     fields: [],
+        //     condition: function (self) {
+        //         return self.config.promotion;
+        //     },
+        //     domain: function (self) {
+        //         return [['promotion_id', 'in', self.promotion_ids]]
+        //     },
+        //     context: {'pos': true},
+        //     loaded: function (self, discounts_apply) {
+        //         self.promotion_discount_apply_by_promotion_id = {};
+        //         var i = 0;
+        //         while (i < discounts_apply.length) {
+        //             if (!self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]]) {
+        //                 self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]] = [discounts_apply[i]]
+        //             } else {
+        //                 self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]].push(discounts_apply[i])
+        //             }
+        //             i++;
+        //         }
+        //     }
+        // }, {
+        //     model: 'pos.promotion.price',
+        //     fields: [],
+        //     condition: function (self) {
+        //         return self.config.promotion;
+        //     },
+        //     domain: function (self) {
+        //         return [['promotion_id', 'in', self.promotion_ids]]
+        //     },
+        //     context: {'pos': true},
+        //     loaded: function (self, prices) {
+        //         self.promotion_price_by_promotion_id = {};
+        //         var i = 0;
+        //         while (i < prices.length) {
+        //             if (!self.promotion_price_by_promotion_id[prices[i].promotion_id[0]]) {
+        //                 self.promotion_price_by_promotion_id[prices[i].promotion_id[0]] = [prices[i]]
+        //             } else {
+        //                 self.promotion_price_by_promotion_id[prices[i].promotion_id[0]].push(prices[i])
+        //             }
+        //             i++;
+        //         }
+        // }
+    }]);
 
     var _super_order = models.Order.prototype;
     models.Order = models.Order.extend({
-        //         initialize: function (attributes, options) {
-        //             var self = this;
-        //             var res = _super_order.initialize.apply(this, arguments);
-        //             setInterval(function () {
-        //                 self.auto_build_promotion();
-        //                 console.log('auto build promotion')
-        //             }, 1000);
-        //             return res;
-        //         },
-        //         auto_build_promotion: function () {
-        //             if (!this.pos.building_promotion || this.pos.building_promotion == false) {
-        //                 var order = this.pos.get('selectedOrder');
-        //                 if (order && order.orderlines && order.orderlines.length && this.pos.config.promotion == true && this.pos.config.promotion_ids.length) {
-        //                     this.pos.building_promotion = true;
-        //                     order.compute_promotion()
-        //                     this.pos.building_promotion = false;
-        //                 }
-        //             }
-        //         },
+        // initialize: function (attributes, options) {
+        //     var self = this;
+        //     var res = _super_order.initialize.apply(this, arguments);
+        //     setInterval(function () {
+        //         self.auto_build_promotion();
+        //         console.log('auto build promotion')
+        //     }, 1000);
+        //     return res;
+        // },
+        // auto_build_promotion: function () {
+        //     if (!this.pos.building_promotion || this.pos.building_promotion == false) {
+        //         var order = this.pos.get('selectedOrder');
+        //         if (order && order.orderlines && order.orderlines.length && this.pos.config.promotion == true && this.pos.config.promotion_ids.length) {
+        //             this.pos.building_promotion = true;
+        //             order.compute_promotion()
+        //             this.pos.building_promotion = false;
+        //         }
+        //     }
+        // },
         get_total_without_promotion_and_tax: function () {
             console.log('get_total_without_promotion_and_tax');
 
@@ -400,24 +425,50 @@ odoo.define('pos_promotion', function (require) {
         // },
         // 3
         // check condition for apply discount by quantity product
-        checking_apply__specified_goods_promotion_id: function (promotion) {
-            console.log('checking_apply__specified_goods_promotion_id');
+        checking_apply_specified_goods_promotion_id: function (promotion) {
+            console.log('checking_apply_specified_goods_promotion_id');
 
-            var can_apply = false;
-            var rules = this.pos.promotion_specified_goods_promotion_id;
+            // var can_apply = false;
+            var promotions = this.pos.promotion_specified_goods_promotion_id;
             var product_quantity_by_product_id = this.product_quantity_by_product_id();
             for (product_id in product_quantity_by_product_id) {
-                var rules_by_product_id = rules[product_id];
-                if (rules_by_product_id) {
-                    for (var i = 0; i < rules_by_product_id.length; i++) {
-                        var rule = rules_by_product_id[i];
-                        if (rule && product_quantity_by_product_id[product_id] >= rule.quantity) {
-                            can_apply = true;
+                promotions.apply = false;
+                for (promotionId in promotions) {
+                    combos = promotions[promotionId];
+                    combos.apply = true;
+                    for (comboId in combos) {
+                        combo = combos[comboId];
+                        combo.apply = true;
+                        for (productId in combo.product_ids) {
+                            product = combo.product_ids[productId];
+                            // product = products[productId];
+                            if (productId == product_id) {
+                                product.count = product_quantity_by_product_id[product_id];
+                            } else {
+                                combo.apply = false;
+                            }
+                        }
+                        if (!combo.apply) {
+                            combos.apply = false;
                         }
                     }
+                    if (combos.apply) {
+                        promotions.apply = true;
+                    }
                 }
+
+                // var rules_by_product_id = promotionSpecifiedGoods[product_id];
+                // if (rules_by_product_id) {
+                //     for (var i = 0; i < rules_by_product_id.length; i++) {
+                //         var rule = rules_by_product_id[i];
+                //         if (rule && product_quantity_by_product_id[product_id] >= rule.quantity) {
+                //             can_apply = true;
+                //         }
+                //     }
+                // }
             }
-            return can_apply;
+            console.log(promotions);
+            return promotions.apply;
         },
         // 4 & 5
         // check pack free gift and pack discount product
@@ -516,7 +567,7 @@ odoo.define('pos_promotion', function (require) {
         compute_specified_goods_total: function (promotion) {
             console.log('compute_specified_goods_total');
 
-            var check = this.checking_apply_discount_filter_by_quantity_of_product(promotion)
+            var check = this.checking_apply_specified_goods_promotion_id(promotion)
             if (check == false) {
                 return;
             }
@@ -755,7 +806,11 @@ odoo.define('pos_promotion', function (require) {
         add_promotion: function (product, price, quantity, options) {
             console.log('add_promotion');
 
-            var line = new models.Orderline({}, { pos: this.pos, order: this, product: product });
+            var line = new models.Orderline({}, {
+                pos: this.pos,
+                order: this,
+                product: product
+            });
             if (options.promotion) {
                 line.promotion = options.promotion;
             }
@@ -793,17 +848,13 @@ odoo.define('pos_promotion', function (require) {
                 var promotion = this.pos.promotions[i];
                 if (promotion['type'] == '1_discount_total_order' && this.checking_apply_total_order(promotion)) {
                     can_apply = true;
-                }
-                else if (promotion['type'] == '2_value_reduction_on_goods_total' && this.checking_apply_total_order(promotion)) {
+                } else if (promotion['type'] == '2_value_reduction_on_goods_total' && this.checking_apply_total_order(promotion)) {
                     can_apply = true;
-                }
-                else if (promotion['type'] == '3_specified_goods_total' && this.checking_apply__specified_goods_promotion_id(promotion)) {
+                } else if (promotion['type'] == '3_specified_goods_total' && this.checking_apply_specified_goods_promotion_id(promotion)) {
                     can_apply = true;
-                }
-                else if ((promotion['type'] == '4_pack_discount' || promotion['type'] == '5_pack_free_gift') && (this.pos.promotion_discount_condition_by_promotion_id[promotion.id] || [])) {
+                } else if ((promotion['type'] == '4_pack_discount' || promotion['type'] == '5_pack_free_gift') && (this.pos.promotion_discount_condition_by_promotion_id[promotion.id] || [])) {
                     var promotion_condition_items = true;
-                }
-                else if (promotion['type'] == '6_price_filter_quantity' && this.checking_apply_price_filter_by_quantity_of_product(promotion)) {
+                } else if (promotion['type'] == '6_price_filter_quantity' && this.checking_apply_price_filter_by_quantity_of_product(promotion)) {
                     can_apply = true;
                 }
             }
