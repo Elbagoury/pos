@@ -151,7 +151,7 @@ class="oe_highlight"/>
  	                  			<tree>
  	                  				<field name="user_id"/>
  	                  				<field name="state_from"/>
- 	                  				<field name="state_to"/>
+ 	                  				`<field name="state_to"/>
  	                  				<field name="changed_on"/>
  	                  			</tree>
  	                  		</field>
@@ -246,12 +246,27 @@ class="oe_highlight"/>
          </field>
 	</record>
 
+	<record id="view_daily_planning_schedule_filter" model="ir.ui.view">
+            <field name="name">Daily Planning</field>
+            <field name="model">daily.planning.schedule</field>
+            <field name="arch" type="xml">
+			<search string="Nozzel">              
+                <group expand="0" string="Group By...">                        
+                    <filter name="project_id" string="Project" icon="terp-personal+" domain="[]" context="{'group_by':'project_id'}"/>
+					<filter string="Month" name="group_name"  icon="terp-go-month" domain="[]" context="{'group_by':'name'}"/>
+				</group>
+			</search>
+            </field>
+         </record>
+
 	<record id="daily_planning_schedule_action" model="ir.actions.act_window">
 		<field name="name">Daily Planning Schedule</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">daily.planning.schedule</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+		<field name="context">{"search_default_project_id":1,"search_default_group_name":1}</field>                        
+            <field name="search_view_id" ref="view_daily_planning_schedule_filter"/>
 	</record>
 
 	<menuitem id="daily_planning_schedule_menu"
