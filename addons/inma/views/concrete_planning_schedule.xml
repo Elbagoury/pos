@@ -151,7 +151,7 @@ class="oe_highlight"/>
  	                  			<tree>
  	                  				<field name="user_id"/>
  	                  				<field name="state_from"/>
- 	                  				`<field name="state_to"/>
+ 	                  				<field name="state_to"/>
  	                  				<field name="changed_on"/>
  	                  			</tree>
  	                  		</field>
