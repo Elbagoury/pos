@@ -27,6 +27,7 @@
                             <group>
                                 <field name="start_date"/>
                                 <field name="end_date"/>
+                                <field name="reason"/>
                             </group>
                         </group>
                         <group string="Discounts on Total Order"
@@ -51,7 +52,16 @@
                                attrs="{'invisible': [('type', '!=', '3_specified_goods_total')], 'required': [('type', '=', '3_specified_goods_total')]}">
                             <field name="specified_good_total_ids" nolabel="1">
                                 <tree string="Specified good totals" editable="1">
-                                    <field name="product_ids" widget="many2many_tags"/>
+                                    <field name="product_ids"/>
+                                    <field name="price"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Specified goods total"
+                               attrs="{'invisible': [('type', '!=', '3_specified_goods_total')], 'required': [('type', '=', '3_specified_goods_total')]}">
+                            <field name="specified_good_total_ids" nolabel="1">
+                                <tree string="Specified good totals" editable="1">
+                                    <field name="product_ids"/>
                                     <field name="price"/>
                                 </tree>
                             </field>
@@ -70,7 +80,7 @@
                                attrs="{'invisible': [('type', '!=', '5_discount_applied_specified_item')], 'required': [('type', '=', '5_discount_applied_specified_item')]}">
                             <field name="discount_applied_specified_item_ids" nolabel="1">
                                 <tree string="Discount applied to specified items" editable="1">
-                                    <field name="product_ids" widget="many2many_tags"/>
+                                    <field name="product_ids"/>
                                     <field name="product_id"/>
                                 </tree>
                             </field>
