@@ -7,6 +7,32 @@ odoo.define('pos_promotion', function (require) {
     var round_pr = utils.round_precision;
     var time = require('web.time');
 
+    var groupBy = (xs, key) => {
+        return xs.reduce((rv, x) => {
+            (rv[x[key]] = rv[x[key]] || []).push(x);
+            return rv;
+        }, {});
+    };
+    Array.prototype.groupBy = function (key) {
+        return this.reduce((rv, x) => {
+            (rv[x[key]] = rv[x[key]] || []).push(x);
+            return rv;
+        }, {});
+    };
+    // Array.prototype.groupBy = function (key) {
+    //     return this.reduce((rv, x) => {
+    //         (rv[x[key]] = rv[x[key]] || []).push(x);
+    //         return rv;
+    //     }, {});
+    // };
+    Array.prototype.max = function () {
+        return Math.max.apply(null, this);
+    };
+
+    Array.prototype.min = function () {
+        return Math.min.apply(null, this);
+    };
+
     models.load_models([{
         model: 'pos.promotion',
         condition: function (self) {
@@ -25,6 +51,7 @@ odoo.define('pos_promotion', function (require) {
         },
         loaded: function (self, promotions) {
             self.promotions = promotions;
+            self.scrap = {};
             self.promotion_by_id = {};
             self.promotion_ids = []
             var i = 0;
@@ -112,139 +139,197 @@ odoo.define('pos_promotion', function (require) {
         },
         loaded: function (self, specified_goods) {
             console.log("pos.promotion.specified.goods.total", self, specified_goods);
-            const promotionId = specified_goods[0].promotion_id[0];
-            self.promotion_specified_goods_promotion_id = {};
-            self.promotion_specified_goods_promotion_id[promotionId] = {};
-            specified_goods.map(specifiedGoods => {
-                // if (!self.promotion_specified_goods_promotion_id[specifiedGoods.promotion_id[0]]) {
-                let products = {};
-                specifiedGoods.product_ids.map(data => {
-                    products[data] = {
-                        id: data,
+            if (!self.promotion_combo_product) {
+                self.promotion_combo_product = [];
+            }
+            if (!self.promotionIds) {
+                self.promotionIds = {};
+            }
+            if (!self.allPromotions) {
+                self.allPromotions = {};
+            }
+            if (!(self.promotionsToApply && self.promotionsToApply.length)) {
+                self.promotionsToApply = [];
+            }
+            if (specified_goods && specified_goods.length) {
+                self.promotionIds['specified_goods'] = specified_goods[0].promotion_id[0];
+                self.promotionIds[specified_goods[0].promotion_id[0]] = 'specified_goods';
+                self.allPromotions[self.promotionIds['specified_goods']] = {};
+                specified_goods.map(specifiedGoods => {
+                    // if (!self.allPromotions[specifiedGoods.promotion_id[0]]) {
+                    let products = {};
+                    specifiedGoods.product_ids.map(data => {
+                        products[data] = {
+                            id: data,
+                            count: 0
+                        }
+                        self.promotion_combo_product.push({
+                            promotion_id: self.promotionIds['specified_goods'],
+                            combo_id: specifiedGoods.id,
+                            product_id: data,
+                            price: specifiedGoods.price,
+                            count: 0
+                        })
+                    });
+                    self.allPromotions[self.promotionIds['specified_goods']][specifiedGoods.id] = {
+                        display_name: specifiedGoods.display_name,
+                        id: specifiedGoods.id,
+                        promotion_id: specifiedGoods.promotion_id[0],
+                        promotion_name: specifiedGoods.promotion_id[1],
+                        type: 'specified_goods',
+                        price: specifiedGoods.price,
+                        count: 0,
+                        product_ids: products,
+                        products: specifiedGoods.product_ids
+                    }
+                    // } else {
+                    //     self.allPromotions[self.promotionIds['specified_goods']][specifiedGoods.id] = specifiedGoods
+                    // }
+                });
+            }
+        }
+    }, {
+        model: 'pos.promotion.number.items.price',
+        fields: [],
+        condition: function (self) {
+            return self.config.promotion;
+        },
+        domain: function (self) {
+            return [
+                ['promotion_id', 'in', self.promotion_ids]
+            ]
+        },
+        context: {
+            'pos': true
+        },
+        loaded: function (self, number_items) {
+            console.log("pos.promotion.number.items.price", self, number_items);
+            if (!self.promotion_combo_product) {
+                self.promotion_combo_product = [];
+            }
+            if (!self.promotionIds) {
+                self.promotionIds = {};
+            }
+            if (!self.allPromotions) {
+                self.allPromotions = {};
+            }
+            if (!(self.promotionsToApply && self.promotionsToApply.length)) {
+                self.promotionsToApply = [];
+            }
+            if (number_items && number_items.length) {
+                self.promotionIds['number_items'] = number_items[0].promotion_id[0];
+                self.promotionIds[number_items[0].promotion_id[0]] = 'number_items';
+                self.allPromotions[self.promotionIds['number_items']] = {};
+                number_items.map(numberItems => {
+                    // if (!self.allPromotions[numberItems.promotion_id[0]]) {
+                    let products = {};
+                    products[numberItems.product_id[0]] = {
+                        id: numberItems.product_id[0],
                         count: 0
                     }
+                    self.promotion_combo_product.push({
+                        promotion_id: self.promotionIds['number_items'],
+                        combo_id: numberItems.id,
+                        product_id: numberItems.product_id[0],
+                        price: numberItems.price ? numberItems.price : 0,
+                        count: 0
+                    })
+                    self.allPromotions[self.promotionIds['number_items']][numberItems.id] = {
+                        display_name: numberItems.display_name,
+                        id: numberItems.id,
+                        price: numberItems.price ? numberItems.price : 0,
+                        buy_qty: numberItems.buy_qty,
+                        offer_qty: numberItems.offer_qty,
+                        promotion_id: numberItems.promotion_id[0],
+                        promotion_name: numberItems.promotion_id[1],
+                        type: 'number_items',
+                        count: 0,
+                        product_ids: products,
+                        products: [numberItems.product_id[0]]
+                    }
+                    // } else {
+                    //     self.allPromotions[self.promotionIds['number_items']][numberItems.id] = numberItems
+                    // }
                 });
-                self.promotion_specified_goods_promotion_id[promotionId][specifiedGoods.id] = {
-                    display_name: specifiedGoods.display_name,
-                    id: specifiedGoods.id,
-                    price: specifiedGoods.price,
-                    product_ids: products
-                }
-                // } else {
-                //     self.promotion_specified_goods_promotion_id[promotionId][specifiedGoods.id] = specifiedGoods
-                // }
-            })
+            }
         }
-        // }, {
-        //     model: 'pos.promotion.gift.condition',
-        //     fields: [],
-        //     condition: function (self) {
-        //         return self.config.promotion;
-        //     },
-        //     domain: function (self) {
-        //         return [['promotion_id', 'in', self.promotion_ids]]
-        //     },
-        //     context: {'pos': true},
-        //     loaded: function (self, gift_conditions) {
-        //         self.promotion_gift_condition_by_promotion_id = {};
-        //         var i = 0;
-        //         while (i < gift_conditions.length) {
-        //             if (!self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]]) {
-        //                 self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]] = [gift_conditions[i]]
-        //             } else {
-        //                 self.promotion_gift_condition_by_promotion_id[gift_conditions[i].promotion_id[0]].push(gift_conditions[i])
-        //             }
-        //             i++;
-        //         }
-        //     }
-        // }, {
-        //     model: 'pos.promotion.gift.free',
-        //     fields: [],
-        //     condition: function (self) {
-        //         return self.config.promotion;
-        //     },
-        //     domain: function (self) {
-        //         return [['promotion_id', 'in', self.promotion_ids]]
-        //     },
-        //     context: {'pos': true},
-        //     loaded: function (self, gifts_free) {
-        //         self.promotion_gift_free_by_promotion_id = {};
-        //         var i = 0;
-        //         while (i < gifts_free.length) {
-        //             if (!self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]]) {
-        //                 self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]] = [gifts_free[i]]
-        //             } else {
-        //                 self.promotion_gift_free_by_promotion_id[gifts_free[i].promotion_id[0]].push(gifts_free[i])
-        //             }
-        //             i++;
-        //         }
-        //     }
-        // }, {
-        //     model: 'pos.promotion.discount.condition',
-        //     fields: [],
-        //     condition: function (self) {
-        //         return self.config.promotion;
-        //     },
-        //     domain: function (self) {
-        //         return [['promotion_id', 'in', self.promotion_ids]]
-        //     },
-        //     context: {'pos': true},
-        //     loaded: function (self, discount_conditions) {
-        //         self.promotion_discount_condition_by_promotion_id = {};
-        //         var i = 0;
-        //         while (i < discount_conditions.length) {
-        //             if (!self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]]) {
-        //                 self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]] = [discount_conditions[i]]
-        //             } else {
-        //                 self.promotion_discount_condition_by_promotion_id[discount_conditions[i].promotion_id[0]].push(discount_conditions[i])
-        //             }
-        //             i++;
-        //         }
-        //     }
-        // }, {
-        //     model: 'pos.promotion.discount.apply',
-        //     fields: [],
-        //     condition: function (self) {
-        //         return self.config.promotion;
-        //     },
-        //     domain: function (self) {
-        //         return [['promotion_id', 'in', self.promotion_ids]]
-        //     },
-        //     context: {'pos': true},
-        //     loaded: function (self, discounts_apply) {
-        //         self.promotion_discount_apply_by_promotion_id = {};
-        //         var i = 0;
-        //         while (i < discounts_apply.length) {
-        //             if (!self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]]) {
-        //                 self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]] = [discounts_apply[i]]
-        //             } else {
-        //                 self.promotion_discount_apply_by_promotion_id[discounts_apply[i].promotion_id[0]].push(discounts_apply[i])
-        //             }
-        //             i++;
-        //         }
-        //     }
-        // }, {
-        //     model: 'pos.promotion.price',
-        //     fields: [],
-        //     condition: function (self) {
-        //         return self.config.promotion;
-        //     },
-        //     domain: function (self) {
-        //         return [['promotion_id', 'in', self.promotion_ids]]
-        //     },
-        //     context: {'pos': true},
-        //     loaded: function (self, prices) {
-        //         self.promotion_price_by_promotion_id = {};
-        //         var i = 0;
-        //         while (i < prices.length) {
-        //             if (!self.promotion_price_by_promotion_id[prices[i].promotion_id[0]]) {
-        //                 self.promotion_price_by_promotion_id[prices[i].promotion_id[0]] = [prices[i]]
-        //             } else {
-        //                 self.promotion_price_by_promotion_id[prices[i].promotion_id[0]].push(prices[i])
-        //             }
-        //             i++;
-        //         }
-        // }
+    }, {
+        model: 'pos.promotion.discount.specified.item',
+        fields: [],
+        condition: function (self) {
+            return self.config.promotion;
+        },
+        domain: function (self) {
+            return [
+                ['promotion_id', 'in', self.promotion_ids]
+            ]
+        },
+        context: {
+            'pos': true
+        },
+        loaded: function (self, discount_specified_item) {
+            console.log("pos.promotion.discount.specified.item", self, discount_specified_item);
+            if (!self.promotion_combo_product) {
+                self.promotion_combo_product = [];
+            }
+            if (!self.promotionIds) {
+                self.promotionIds = {};
+            }
+            if (!self.allPromotions) {
+                self.allPromotions = {};
+            }
+            if (!(self.promotionsToApply && self.promotionsToApply.length)) {
+                self.promotionsToApply = [];
+            }
+            if (discount_specified_item && discount_specified_item.length) {
+                self.promotionIds['discount_specified_item'] = discount_specified_item[0].promotion_id[0];
+                self.promotionIds['discount_specified_item[0].promotion_id[0]'] = 'discount_specified_item';
+                self.allPromotions[self.promotionIds['discount_specified_item']] = {};
+                discount_specified_item.map(discountSpecifiedItem => {
+                    // if (!self.allPromotions[discountSpecifiedItem.promotion_id[0]]) {
+                    let freeProduct = {
+                        id: discountSpecifiedItem.product_id[0],
+                        count: 0
+                    }
+                    let products = {};
+                    discountSpecifiedItem.product_ids.map(data => {
+                        products[data] = {
+                            id: data,
+                            count: 0
+                        }
+                        self.promotion_combo_product.push({
+                            promotion_id: self.promotionIds['discount_specified_item'],
+                            combo_id: discountSpecifiedItem.id,
+                            product_id: data,
+                            price: discountSpecifiedItem.price,
+                            count: 0
+                        })
+                    });
+                    self.promotion_combo_product.push({
+                        promotion_id: self.promotionIds['discount_specified_item'],
+                        combo_id: discountSpecifiedItem.id,
+                        product_id: discountSpecifiedItem.product_id[0],
+                        price: discountSpecifiedItem.price ? discountSpecifiedItem.price : 0,
+                        count: 0
+                    })
+                    self.allPromotions[self.promotionIds['discount_specified_item']][discountSpecifiedItem.id] = {
+                        display_name: discountSpecifiedItem.display_name,
+                        id: discountSpecifiedItem.id,
+                        promotion_id: discountSpecifiedItem.promotion_id[0],
+                        promotion_name: discountSpecifiedItem.promotion_id[1],
+                        type: 'discount_specified_item',
+                        price: discountSpecifiedItem.price ? discountSpecifiedItem.price : 0,
+                        count: 0,
+                        product_ids: products,
+                        freeProduct: freeProduct,
+                        products: discountSpecifiedItem.product_ids
+                    }
+                    // } else {
+                    //     self.allPromotions[self.promotionIds['discount_specified_item']][discountSpecifiedItem.id] = discountSpecifiedItem
+                    // }
+                });
+            }
+        }
     }]);
 
     var _super_order = models.Order.prototype;
@@ -288,14 +373,21 @@ odoo.define('pos_promotion', function (require) {
         },
         compute_promotion: function () {
             console.log('compute_promotion');
-
+            var order = this;
+            var lines = order.orderlines.models; // remove old lines applied promotion by total order
+            if (lines.length) {
+                lines.filter(line => line.promotion == true).forEach(line => {
+                    return order.remove_orderline(line);
+                })
+            }
             var promotions = this.pos.promotions
-            if (promotions) {
-                for (var i = 0; i < promotions.length; i++) {
-                    var type = promotions[i].type
-                    var order = this;
-                    if (order.orderlines.length) {
-                        // discount filter by total of current order
+            if (promotions && promotions.length) {
+                if (promotions[0].product_id && promotions[0].product_id.length) {
+                    this.pos.promotionServiceProduct = this.pos.db.get_product_by_id(promotions[0].product_id[0]);
+                }
+                if (order.orderlines.length) {
+                    for (var i = 0; i < promotions.length; i++) {
+                        var type = promotions[i].type
                         if (type == '1_discount_total_order') {
                             order.compute_discount_total_order(promotions[i]);
                         }
@@ -303,23 +395,24 @@ odoo.define('pos_promotion', function (require) {
                         if (type == '2_value_reduction_on_goods_total') {
                             order.compute_value_reduction_on_goods_total(promotions[i]);
                         }
-                        // discount by quantity of product 3_discount_by_quantity_of_product
-                        if (type == '3_specified_goods_total') {
-                            order.compute_specified_goods_total(promotions[i]);
-                        }
-                        // discount by pack
-                        if (type == '4_pack_discount') {
-                            order.compute_pack_discount(promotions[i]);
-                        }
-                        // free items filter by pack
-                        if (type == '5_pack_free_gift') {
-                            order.compute_pack_free_gift(promotions[i]);
-                        }
-                        // re-build price filter by quantity of product
-                        if (type == '6_price_filter_quantity') {
-                            order.compute_price_filter_quantity(promotions[i]);
-                        }
                     }
+                    // discount filter by total of current order
+                    // discount by quantity of product 3_discount_by_quantity_of_product
+                    // if (type == '3_specified_goods_total' || type == '3_specified_goods_total' || type == '3_specified_goods_total') {
+                    order.compute_all_promotions_related_to_product();
+                    // }
+                    // discount by pack
+                    // if (type == '4_pack_discount') {
+                    //     order.compute_pack_discount(promotions[i]);
+                    // }
+                    // // free items filter by pack
+                    // if (type == '5_pack_free_gift') {
+                    //     order.compute_pack_free_gift(promotions[i]);
+                    // }
+                    // // re-build price filter by quantity of product
+                    // if (type == '6_price_filter_quantity') {
+                    //     order.compute_price_filter_quantity(promotions[i]);
+                    // }
                 }
             }
         },
@@ -362,8 +455,7 @@ odoo.define('pos_promotion', function (require) {
             }
             return lines_list
         },
-        // 1
-        // check current order can apply discount by total order
+        // 1. check current order can apply discount by total order
         checking_apply_total_order: function (promotion, type = '') {
             console.log('checking_apply_total_order');
             var discount_lines;
@@ -394,114 +486,142 @@ odoo.define('pos_promotion', function (require) {
             }
             return discount_line_tmp;
         },
-        // 2
-        // check current order can apply discount by categories
-        // checking_can_discount_by_categories: function (promotion) {
-        //     var can_apply = false
-        //     var product = this.pos.db.get_product_by_id(promotion.product_id[0]);
-        //     if (!product || !this.pos.promotion_reduction_order_by_id) {
-        //         return false;
-        //     }
-        //     for (i in this.pos.promotion_reduction_order_by_id) {
-        //         var promotion_line = this.pos.promotion_reduction_order_by_id[i];
-        //         var amount_total_by_category = 0;
-        //         var z = 0;
-        //         var lines = this.orderlines.models;
-        //         while (z < lines.length) {
-        //             if (!lines[z].product.pos_categ_id) {
-        //                 z++;
-        //                 continue;
-        //             }
-        //             if (lines[z].product.pos_categ_id[0] == promotion_line.category_id[0]) {
-        //                 amount_total_by_category += lines[z].get_price_without_tax();
-        //             }
-        //             z++;
-        //         }
-        //         if (amount_total_by_category > 0) {
-        //             can_apply = true
-        //         }
-        //     }
-        //     return can_apply
-        // },
-        // 3
-        // check condition for apply discount by quantity product
-        checking_apply_specified_goods_promotion_id: function (promotion) {
+        // 3. check condition for apply discount by quantity product
+        checking_apply_specified_goods_promotion_id: function () {
             console.log('checking_apply_specified_goods_promotion_id');
 
+            this.pos.promotion_combo_product_gb_product_id = this.pos.promotion_combo_product.groupBy('product_id');
             // var can_apply = false;
-            var promotions = this.pos.promotion_specified_goods_promotion_id;
+            var promotions = {};
+            promotions = this.pos.allPromotions;
             var product_quantity_by_product_id = this.product_quantity_by_product_id();
-            for (product_id in product_quantity_by_product_id) {
-                promotions.apply = false;
-                for (promotionId in promotions) {
+            // for (product_id in product_quantity_by_product_id) {
+            promotions.apply = false;
+            for (promotionId in promotions) {
+                if (parseInt(promotionId)) {
                     combos = promotions[promotionId];
-                    combos.apply = true;
+                    combos.apply = false; // promotion
                     for (comboId in combos) {
-                        combo = combos[comboId];
-                        combo.apply = true;
-                        for (productId in combo.product_ids) {
-                            product = combo.product_ids[productId];
-                            // product = products[productId];
-                            if (productId == product_id) {
-                                product.count = product_quantity_by_product_id[product_id];
-                            } else {
-                                combo.apply = false;
-                            }
-                        }
-                        if (!combo.apply) {
-                            combos.apply = false;
-                        }
-                    }
-                    if (combos.apply) {
-                        promotions.apply = true;
-                    }
-                }
+                        if (parseInt(comboId)) {
+                            combo = combos[comboId];
+                            combo.combo_ids = [];
+                            combo.apply = true; // combo
+                            var prouductCounts = [];
+                            for (productId in combo.product_ids) {
+                                if (parseInt(productId)) {
+                                    product = combo.product_ids[productId];
+                                    if (
+                                        this.pos.promotion_combo_product_gb_product_id &&
+                                        this.pos.promotion_combo_product_gb_product_id[productId] &&
+                                        this.pos.promotion_combo_product_gb_product_id[productId].length > 1
+                                    ) {
+                                        this.pos.promotion_combo_product_gb_product_id[productId].map(data => {
+                                            if (data.combo_id != parseInt(comboId) || data.promotion_id != parseInt(promotionId)) {
+                                                combo.combo_ids.push(data);
+                                            }
+                                        });
+                                    }
+                                    switch (combo.type) {
+                                        case 'specified_goods':
+                                            // product = products[productId];
+                                            // if (productId == product_id) {
+                                            if (product_quantity_by_product_id[productId]) {
+                                                product.count = product_quantity_by_product_id[productId];
+                                                prouductCounts.push(product.count)
+                                            } else {
+                                                product.count = 0;
+                                                prouductCounts.push(product.count)
+                                                combo.apply = false;
+                                                // combos.apply = false;
+                                                // promotions.apply = true;
+                                            }
+                                            // }
+                                            break;
 
-                // var rules_by_product_id = promotionSpecifiedGoods[product_id];
-                // if (rules_by_product_id) {
-                //     for (var i = 0; i < rules_by_product_id.length; i++) {
-                //         var rule = rules_by_product_id[i];
-                //         if (rule && product_quantity_by_product_id[product_id] >= rule.quantity) {
-                //             can_apply = true;
-                //         }
-                //     }
-                // }
+                                        case 'number_items':
+                                            if (product_quantity_by_product_id[productId] > combo.buy_qty) {
+                                                product.count = product_quantity_by_product_id[productId];
+                                                prouductCounts = Math.trunc(product_quantity_by_product_id[productId] / combo.buy_qty);
+                                                // prouductCounts.push(product.count)
+                                            } else {
+                                                product.count = 0;
+                                                prouductCounts = 0;
+                                                // prouductCounts.push(product.count)
+                                                combo.apply = false;
+                                                // combos.apply = false;
+                                                // promotions.apply = true;
+                                            }
+                                            break;
+
+                                        case 'discount_specified_item':
+                                            if (product_quantity_by_product_id[productId]) {
+                                                product.count = product_quantity_by_product_id[productId];
+                                                prouductCounts.push(product.count)
+                                            } else {
+                                                product.count = 0;
+                                                prouductCounts.push(product.count)
+                                                combo.apply = false;
+                                                // combos.apply = false;
+                                                // promotions.apply = true;
+                                            }
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }
+
+                            switch (combo.type) {
+                                case 'specified_goods':
+                                    combo.count = prouductCounts.min();
+
+                                    break;
+
+                                case 'number_items':
+                                    combo.count = prouductCounts;
+
+                                    break;
+
+                                case 'discount_specified_item':
+                                    if (product_quantity_by_product_id[combo.freeProduct.id]) {
+                                        combo.freeProduct.count = product_quantity_by_product_id[combo.freeProduct.id];
+                                    } else {
+                                        combo.freeProduct.count = 0;
+                                        combo.apply = false;
+                                        // combos.apply = false;
+                                        // promotions.apply = true;
+                                    }
+                                    combo.count = prouductCounts.min();
+
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                            combos.apply = combos.apply || combo.apply;
+                        }
+                    }
+                    promotions.apply = promotions.apply || combos.apply;
+                    // if (combos.apply) {
+                    //     promotions.apply = true;
+                    // }
+                }
             }
+
+            // var rules_by_product_id = promotionSpecifiedGoods[product_id];
+            // if (rules_by_product_id) {
+            //     for (var i = 0; i < rules_by_product_id.length; i++) {
+            //         var rule = rules_by_product_id[i];
+            //         if (rule && product_quantity_by_product_id[product_id] >= rule.quantity) {
+            //             can_apply = true;
+            //         }
+            //     }
+            // }
+
+            // }
             console.log(promotions);
             return promotions.apply;
-        },
-        // 4 & 5
-        // check pack free gift and pack discount product
-        checking_pack_discount_and_pack_free_gift: function (rules) {
-            console.log('checking_pack_discount_and_pack_free_gift');
-
-            var can_apply = true;
-            var product_quantity_by_product_id = this.product_quantity_by_product_id();
-            for (i = 0; i < rules.length; i++) {
-                var rule = rules[i];
-                var product_id = parseInt(rule.product_id[0]);
-                var minimum_quantity = rule.minimum_quantity;
-                if (!product_quantity_by_product_id[product_id] || product_quantity_by_product_id[product_id] < minimum_quantity) {
-                    can_apply = false;
-                }
-            }
-            return can_apply
-        },
-        // 6
-        // check condition for apply price filter by quantity of product
-        checking_apply_price_filter_by_quantity_of_product: function (promotion) {
-            console.log('checking_apply_price_filter_by_quantity_of_product');
-
-            var condition = false;
-            var rules = this.pos.promotion_price_by_promotion_id[promotion.id];
-            var product_quantity_by_product_id = this.product_quantity_by_product_id();
-            for (var i = 0; i < rules.length; i++) {
-                var rule = rules[i];
-                if (rule && product_quantity_by_product_id[rule.product_id[0]] && product_quantity_by_product_id[rule.product_id[0]] >= rule.minimum_quantity) {
-                    condition = true;
-                }
-            }
-            return condition;
         },
 
         // 1. compute discount filter by total order
@@ -509,27 +629,20 @@ odoo.define('pos_promotion', function (require) {
             console.log('compute_discount_total_order');
 
             var discount_line_tmp = this.checking_apply_total_order(promotion, 'discount')
-            var lines = this.orderlines.models; // remove old lines applied promotion by total order
-            if (lines.length) {
-                for (var j = 0; j < lines.length; j++) {
-                    if (lines[j].promotion_discount_total_order) {
-                        this.remove_orderline(lines[j]);
-                    }
-                }
-            }
+
             if (discount_line_tmp == null) {
                 return;
             }
             var total_order = this.get_total_without_promotion_and_tax();
             if (discount_line_tmp && total_order > 0) {
                 var product = this.pos.db.get_product_by_id(promotion.product_id[0]);
-                var price = -total_order / 100 * discount_line_tmp.discount
+                var price = (-total_order / 100 * discount_line_tmp.discount).toFixed(2);
                 if (product && price != 0) {
                     var options = {};
                     options.promotion_discount_total_order = true;
                     options.promotion = true;
                     options.promotion_reason = 'discount ' + discount_line_tmp.discount + ' % ' + ' when total order greater or equal ' + discount_line_tmp.minimum_amount;
-                    this.add_promotion(product, price, 1, options)
+                    this.add_promotion(this.pos.promotionServiceProduct, price, 1, options)
                 }
             }
         },
@@ -539,45 +652,136 @@ odoo.define('pos_promotion', function (require) {
 
 
             var reduction_line_tmp = this.checking_apply_total_order(promotion, 'reduction')
-            var lines = this.orderlines.models; // remove old lines applied promotion by total order
-            if (lines.length) {
-                for (var j = 0; j < lines.length; j++) {
-                    if (lines[j].promotion_value_reduction_on_goods_total) {
-                        this.remove_orderline(lines[j]);
-                    }
-                }
-            }
+
             if (reduction_line_tmp == null) {
                 return;
             }
             var total_order = this.get_total_without_promotion_and_tax();
             if (reduction_line_tmp && total_order > 0) {
                 var product = this.pos.db.get_product_by_id(promotion.product_id[0]);
-                var price = -reduction_line_tmp.value
+                var price = -reduction_line_tmp.value.toFixed(2);
                 if (product && price != 0) {
                     var options = {};
                     options.promotion_value_reduction_on_goods_total = true;
                     options.promotion = true;
                     options.promotion_reason = 'reduction ' + reduction_line_tmp.value + ' $ ' + ' when total order greater or equal ' + reduction_line_tmp.minimum_amount;
-                    this.add_promotion(product, price, 1, options)
+                    this.add_promotion(this.pos.promotionServiceProduct, price, 1, options)
                 }
             }
         },
         // 3. compute discount filter by quantity of product
-        compute_specified_goods_total: function (promotion) {
-            console.log('compute_specified_goods_total');
+        compute_all_promotions_related_to_product: function () {
+            this.pos.promotionsToApply = [];
+            console.log('compute_all_promotions_related_to_product');
+            // var specifiedGoods = this.pos.allPromotions[this.pos.promotionIds['specified_goods']];
+            // var specifiedGoods = this.pos.allPromotions[this.pos.promotionIds['specified_goods']];
+            // var specifiedGoods = this.pos.allPromotions[this.pos.promotionIds['specified_goods']];
+            // if (specifiedGoods.apply == false) {
+            //     return;
+            // }
 
-            var check = this.checking_apply_specified_goods_promotion_id(promotion)
-            if (check == false) {
+            for (promotionId in this.pos.allPromotions) {
+                singlePromotions = this.pos.allPromotions[promotionId];
+                for (singlePromotionKey in singlePromotions) {
+                    singlePromotion = singlePromotions[singlePromotionKey]
+                    if (singlePromotion.apply) {
+                        switch (singlePromotion.type) {
+                            case 'specified_goods':
+                                singlePromotion.totalProductPrice = 0;
+                                singlePromotion.productsDetails = singlePromotion.products.map(product => {
+                                    product = this.pos.db.get_product_by_id(product);
+                                    singlePromotion.totalProductPrice += product.price;
+                                    return product;
+                                });
+                                singlePromotion.productNames = singlePromotion.productsDetails.map(productsDetail => productsDetail.display_name);
+                                singlePromotion.reductionAmount = singlePromotion.price - singlePromotion.totalProductPrice;
+                                singlePromotion['promotion_' + this.pos.promotionIds[promotionId]] = true;
+                                this.pos.promotionsToApply.push(singlePromotion);
+
+                                break;
+
+                            case 'number_items':
+                                singlePromotion.productsDetails = singlePromotion.products.map(product => {
+                                    product = this.pos.db.get_product_by_id(product);
+                                    singlePromotion.price = product.price * singlePromotion.offer_qty;
+                                    return product;
+                                });
+                                singlePromotion.productNames = singlePromotion.productsDetails.map(productsDetail => productsDetail.display_name);
+                                singlePromotion.reductionAmount = -singlePromotion.price;
+                                singlePromotion['promotion_' + singlePromotion.type] = true;
+                                this.pos.promotionsToApply.push(singlePromotion);
+                                break;
+
+                            case 'discount_specified_item':
+                                singlePromotion.productsDetails = singlePromotion.products.map(product => this.pos.db.get_product_by_id(product));
+                                singlePromotion.productNames = singlePromotion.productsDetails.map(productsDetail => productsDetail.display_name);
+                                singlePromotion.freeProductsDetails = this.pos.db.get_product_by_id(singlePromotion.freeProduct.id);
+                                singlePromotion.reductionAmount = freeProductsDetails.price;
+                                singlePromotion['promotion_' + this.pos.promotionIds[promotionId]] = true;
+                                this.pos.promotionsToApply.push(singlePromotion);
+
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            if (this.pos.promotionsToApply && this.pos.promotionsToApply.length) {
+                var promotion_lines = [];
+                this.pos.promotionsToApply.map(promoToApply => {
+                    if (promoToApply.apply) {
+                        promotion_lines.push(promoToApply);
+                    }
+                })
+            } else {
                 return;
             }
-            var quantity_by_product_id = {}
+
+
+            // if (reduction_line_tmp == null) {
+            //     return;
+            // }
+            var total_order = this.get_total_without_promotion_and_tax();
+            if (promotion_lines && promotion_lines.length && total_order > 0) {
+                promotion_lines.map(promotionLine => {
+
+                    // var product = this.pos.db.get_product_by_id(promotion.product_id[0]);
+                    this.pos.scrap._price = promotionLine.reductionAmount.toFixed(2)
+                    this.pos.scrap._productNames = promotionLine.productNames.join(' ');
+                    this.pos.scrap._reason = 'reduction ~~_price~~ $ for combo products ~~_productNames~~';
+                    if (this.pos.scrap._price != 0) {
+                        var options = promotionLine;
+                        options.promotion = true;
+                        options.promotion_reason = this.pos.scrap._reason.split('~~').map(data => {
+                            console.log(
+                                this.pos.scrap[data]
+                            );
+                            if (this.pos.scrap[data]) {
+                                if (parseInt(this.pos.scrap[data])) {
+                                    return Math.abs(this.pos.scrap[data]);
+                                }
+                                return this.pos.scrap[data];
+                            } else {
+                                return data
+                            }
+                        }).join(' ');
+                        // options.promotion_reason = 'reduction ' + price + ' $ for combo products ' + promotionLine.productNames.join(' ');
+                        this.add_promotion(this.pos.promotionServiceProduct, this.pos.scrap._price, promotionLine.count, options)
+                    }
+                })
+            }
+
+
+
+            /* var quantity_by_product_id = {}
             var product = this.pos.db.get_product_by_id(promotion.product_id[0]);
             var i = 0;
             var lines = this.orderlines.models;
             while (i < lines.length) {
                 var line = lines[i];
-                if (line.promotion_discount_by_quantity && line.promotion_discount_by_quantity == true) {
+                if (line.promotion_specified_goods && line.promotion_specified_goods == true) {
                     line.set_quantity('remove');
                     line.order.trigger('change', line.order);
                     i++;
@@ -596,7 +800,9 @@ odoo.define('pos_promotion', function (require) {
             }
             for (i in quantity_by_product_id) {
                 var product_id = i;
-                var promotion_lines = this.pos.promotion_quantity_by_product_id[product_id];
+                // specifiedGoods.product_id
+                var promotion_lines = this.pos.promotion_combo_product_gb_product_id[product_id];
+                // var promotion_lines = this.pos.promotion_quantity_by_product_id[product_id];
                 if (!promotion_lines) {
                     continue;
                 }
@@ -618,7 +824,7 @@ odoo.define('pos_promotion', function (require) {
                             x++;
                             continue
                         }
-                        if (lines[x].promotion_discount_by_quantity) {
+                        if (lines[x].promotion_specified_goods) {
                             this.remove_orderline(lines[x]);
                         }
                         if (lines[x].product.id == product_id && lines[x].promotion != true) {
@@ -630,178 +836,14 @@ odoo.define('pos_promotion', function (require) {
                 if (amount_total_by_product > 0 && promotion_line) {
                     var price = -amount_total_by_product / 100 * promotion_line.discount
                     var options = {};
-                    options.promotion_discount_by_quantity = true;
+                    options.promotion_specified_goods = true;
                     options.promotion = true;
                     options.promotion_reason = ' discount ' + promotion_line.discount + ' % when ' + promotion_line.product_id[1] + ' have quantity greater or equal ' + promotion_line.quantity;
                     this.add_promotion(product, price, 1, options)
                 }
-            }
+            } */
         },
 
-        // 4. compute discount product filter by pack items
-        compute_pack_discount: function (promotion) {
-            console.log('compute_pack_discount');
-
-            var promotion_condition_items = this.pos.promotion_discount_condition_by_promotion_id[promotion.id];
-            var product = this.pos.db.get_product_by_id(promotion.product_id[0]);
-            var check = this.checking_pack_discount_and_pack_free_gift(promotion_condition_items);
-            var lines = this.orderlines.models;
-            var i = 0;
-            while (i < lines.length) {
-                var line = lines[i];
-                if (line.promotion_discount && line.promotion_discount == true) {
-                    line.set_quantity('remove');
-                    line.order.trigger('change', line.order);
-                }
-                i++;
-            }
-            if (check == true) {
-                var discount_items = this.pos.promotion_discount_apply_by_promotion_id[promotion.id]
-                if (!discount_items) {
-                    return;
-                }
-                var i = 0;
-                while (i < discount_items.length) {
-                    var discount_item = discount_items[i];
-                    var discount = 0;
-                    var lines = this.orderlines.models;
-                    for (x = 0; x < lines.length; x++) {
-                        if (lines[x].promotion) {
-                            continue;
-                        }
-                        if (lines[x].product.id == discount_item.product_id[0]) {
-                            discount += lines[x].get_price_without_tax()
-                        }
-                    }
-                    if (product && discount > 0) {
-                        var price = -discount / 100 * discount_item.discount
-                        var options = {};
-                        options.promotion_discount = true;
-                        options.promotion = true;
-                        options.promotion_reason = 'discount ' + discount_item.product_id[1] + ' ' + discount_item.discount + ' % of Pack name: ' + promotion.name;
-                        this.add_promotion(product, price, 1, options)
-                    }
-                    i++;
-                }
-            }
-        },
-        // 5. compute gift products filter by pack items
-        compute_pack_free_gift: function (promotion) {
-            console.log('compute_pack_free_gift');
-
-            var promotion_condition_items = this.pos.promotion_gift_condition_by_promotion_id[promotion.id];
-            var check = this.checking_pack_discount_and_pack_free_gift(promotion_condition_items);
-            var lines = this.orderlines.models;
-            var i = 0;
-            while (i < lines.length) {
-                var line = lines[i];
-                if (line.promotion_gift && line.promotion_gift == true) {
-                    line.set_quantity('remove');
-                    line.order.trigger('change', line.order);
-                }
-                i++;
-            }
-            if (check == true) {
-                var gifts = this.pos.promotion_gift_free_by_promotion_id[promotion.id]
-                if (!gifts) {
-                    return;
-                }
-                var gift_amount = 0.00
-                var i = 0;
-                while (i < gifts.length) {
-                    var product = this.pos.db.get_product_by_id(gifts[i].product_id[0]);
-                    if (product) {
-                        // gift_amount+=product.mrp
-                        var quantity = gifts[i].quantity_free
-                        var add_gift_price = gifts[i].add_gift_price
-                        var price = product.mrp - add_gift_price;
-                        var options = {};
-                        options.promotion_gift = true;
-                        options.promotion = true;
-                        options.promotion_reason = ' gift from: ' + promotion.name;
-                        this.add_promotion(product, price, quantity, options)
-                    }
-                    i++;
-                }
-                this.orderlines.models.forEach(function (line) {
-                    promotion_condition_items.forEach(function (res) {
-                        if ((line.promotion_gift == undefined || line.promotion_gift == false) && line.product.id == res.product_id[0]) {
-                            // var gift_price = res.add_gift_price
-                            // if((line.product.mrp-res.add_gift_price)!=line.price)
-                            // {
-                            var new_price = line.price - res.add_gift_price;
-                            // line.set_gift_price(gift_price)
-                            // console.log('new price===',new_price,"gift price===",gift_price)
-                            line.set_unit_price(new_price)
-                            // }
-                        }
-                    })
-                });
-            }
-        },
-        // 6. compute and reset price of line filter by rule: price filter by quantity of product
-        compute_price_filter_quantity: function (promotion) {
-            console.log('compute_price_filter_quantity');
-
-            var promotion_prices = this.pos.promotion_price_by_promotion_id[promotion.id]
-            var product = this.pos.db.get_product_by_id(promotion.product_id[0]);
-            var i = 0;
-            var lines = this.orderlines.models;
-            while (i < lines.length) {
-                var line = lines[i];
-                if (line.promotion_price_by_quantity && line.promotion_price_by_quantity == true) {
-                    line.set_quantity('remove');
-                    line.order.trigger('change', line.order);
-                }
-                i++;
-            }
-            if (promotion_prices) {
-                var prices_item_by_product_id = {};
-                for (var i = 0; i < promotion_prices.length; i++) {
-                    var item = promotion_prices[i];
-                    if (!prices_item_by_product_id[item.product_id[0]]) {
-                        prices_item_by_product_id[item.product_id[0]] = [item]
-                    } else {
-                        prices_item_by_product_id[item.product_id[0]].push(item)
-                    }
-                }
-                var quantity_by_product_id = this.product_quantity_by_product_id()
-                var discount = 0;
-                for (i in quantity_by_product_id) {
-                    if (prices_item_by_product_id[i]) {
-                        var quantity_tmp = 0
-                        var price_item_tmp = null
-                        // root: quantity line, we'll compare this with 2 variable quantity line greater minimum quantity of item and greater quantity temp
-                        for (var j = 0; j < prices_item_by_product_id[i].length; j++) {
-                            var price_item = prices_item_by_product_id[i][j];
-                            if (quantity_by_product_id[i] >= price_item.minimum_quantity && quantity_by_product_id[i] >= quantity_tmp) {
-                                quantity_tmp = price_item.minimum_quantity;
-                                price_item_tmp = price_item;
-                            }
-                        }
-                        if (price_item_tmp) {
-                            var discount = 0;
-                            var z = 0;
-                            while (z < lines.length) {
-                                var line = lines[z];
-                                if (line.product.id == price_item_tmp.product_id[0]) {
-                                    discount += line.get_price_without_tax() - (line.quantity * price_item_tmp.list_price)
-                                }
-                                z++;
-                            }
-                            if (discount > 0) {
-                                var price = -discount;
-                                var options = {};
-                                options.promotion_price_by_quantity = true;
-                                options.promotion = true;
-                                options.promotion_reason = ' By greater or equal ' + price_item_tmp.minimum_quantity + ' ' + price_item_tmp.product_id[1] + ' applied price ' + price_item_tmp.list_price
-                                this.add_promotion(product, price, 1, options)
-                            }
-                        }
-                    }
-                }
-            }
-        },
         // add promotion to current order
         add_promotion: function (product, price, quantity, options) {
             console.log('add_promotion');
@@ -823,8 +865,8 @@ odoo.define('pos_promotion', function (require) {
             if (options.promotion_value_reduction_on_goods_total) {
                 line.promotion_value_reduction_on_goods_total = options.promotion_value_reduction_on_goods_total;
             }
-            if (options.promotion_discount_by_quantity) {
-                line.promotion_discount_by_quantity = options.promotion_discount_by_quantity;
+            if (options.promotion_specified_goods) {
+                line.promotion_specified_goods = options.promotion_specified_goods;
             }
             if (options.promotion_discount) {
                 line.promotion_discount = options.promotion_discount;
@@ -842,7 +884,7 @@ odoo.define('pos_promotion', function (require) {
         },
         current_order_can_apply_promotion: function () {
             console.log('current_order_can_apply_promotion');
-
+            var check_all_promotions_related_to_product = false;
             var can_apply = null;
             for (var i = 0; i < this.pos.promotions.length; i++) {
                 var promotion = this.pos.promotions[i];
@@ -850,14 +892,18 @@ odoo.define('pos_promotion', function (require) {
                     can_apply = true;
                 } else if (promotion['type'] == '2_value_reduction_on_goods_total' && this.checking_apply_total_order(promotion)) {
                     can_apply = true;
-                } else if (promotion['type'] == '3_specified_goods_total' && this.checking_apply_specified_goods_promotion_id(promotion)) {
-                    can_apply = true;
-                } else if ((promotion['type'] == '4_pack_discount' || promotion['type'] == '5_pack_free_gift') && (this.pos.promotion_discount_condition_by_promotion_id[promotion.id] || [])) {
-                    var promotion_condition_items = true;
-                } else if (promotion['type'] == '6_price_filter_quantity' && this.checking_apply_price_filter_by_quantity_of_product(promotion)) {
-                    can_apply = true;
+                } else if (
+                    promotion['type'] == '3_specified_goods_total' ||
+                    promotion['type'] == '4_number_items_price' ||
+                    promotion['type'] == '5_discount_specified_item'
+                ) {
+                    check_all_promotions_related_to_product = true;
                 }
             }
+            if (check_all_promotions_related_to_product && this.checking_apply_specified_goods_promotion_id()) {
+                can_apply = true;
+            }
+
             return can_apply;
         }
     });
@@ -876,8 +922,8 @@ odoo.define('pos_promotion', function (require) {
             if (json.promotion_value_reduction_on_goods_total) {
                 this.promotion_value_reduction_on_goods_total = json.promotion_value_reduction_on_goods_total;
             }
-            if (json.promotion_discount_by_quantity) {
-                this.promotion_discount_by_quantity = json.promotion_discount_by_quantity;
+            if (json.promotion_specified_goods) {
+                this.promotion_specified_goods = json.promotion_specified_goods;
             }
             if (json.promotion_gift) {
                 this.promotion_gift = json.promotion_gift;
@@ -907,8 +953,8 @@ odoo.define('pos_promotion', function (require) {
             if (this.promotion_value_reduction_on_goods_total) {
                 json.promotion_value_reduction_on_goods_total = this.promotion_value_reduction_on_goods_total;
             }
-            if (this.promotion_discount_by_quantity) {
-                json.promotion_discount_by_quantity = this.promotion_discount_by_quantity;
+            if (this.promotion_specified_goods) {
+                json.promotion_specified_goods = this.promotion_specified_goods;
             }
             if (this.promotion_gift) {
                 json.promotion_gift = this.promotion_gift;
