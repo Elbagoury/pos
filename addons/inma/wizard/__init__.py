@@ -4,3 +4,4 @@
 import product_quantity_report
 import wizard_report
 import production_summary_report
+import lot_serial

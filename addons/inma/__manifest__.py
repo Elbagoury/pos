@@ -64,6 +64,7 @@ You can manage:
 	'report/purchase_order_quotation_design.xml',
 	'data/mail_template_data.xml',
 	'report/report_invoice.xml',
+    'wizard/lot_serial_view.xml',
     ],
     'demo': [
         'data/hr_demo.xml'

@@ -19,6 +19,7 @@ class pos_promotion(models.Model):
     specified_good_total_ids = fields.One2many('pos.promotion.specified.goods.total','promotion_id','Specified Goods Total')
     number_of_items_price_ids = fields.One2many('pos.promotion.number.items.price','promotion_id','Number of items for the price of ')
     discount_applied_specified_item_ids = fields.One2many('pos.promotion.discount.specified.item','promotion_id','Discount applied to specified items')
+    reason = fields.Text('Reason', default='reduction ~~_price~~ $ for combo products ~~_productNames~~')
 
     @api.model
     def default_get(self, fields):
