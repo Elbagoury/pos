@@ -671,6 +671,7 @@ class ProductTemplate(models.Model):
 	product_type = fields.Selection([('all','All'),('segment','Segment')], 'Product Tag')
 	vendor_list_id = fields.One2many('vendor.list','product_id','Vendor')
 	project_id = fields.Many2one('project.name', 'Project Name')
+	product_types = fields.Selection([('consume','Cosumable'),('stockable','Stockable')], 'Product Type')
 	
 	@api.one
 	@api.constrains('inma_code_no')
