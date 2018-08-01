@@ -57,15 +57,7 @@
                                 </tree>
                             </field>
                         </group>
-                        <group string="Specified goods total"
-                               attrs="{'invisible': [('type', '!=', '3_specified_goods_total')], 'required': [('type', '=', '3_specified_goods_total')]}">
-                            <field name="specified_good_total_ids" nolabel="1">
-                                <tree string="Specified good totals" editable="1">
-                                    <field name="product_ids"/>
-                                    <field name="price"/>
-                                </tree>
-                            </field>
-                        </group>
+            
                         <group string="Number of items for the price of"
                                attrs="{'invisible': [('type', '!=', '4_number_of_items_price')], 'required': [('type', '=', '4_number_of_items_price')]}">
                             <field name="number_of_items_price_ids" nolabel="1">

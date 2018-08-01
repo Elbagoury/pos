@@ -370,6 +370,20 @@
 
                 </table></div>
   </div>
+  <div class="tab">
+    <input type="radio" name="postab" id="pos-tab" class="tab-switch"></input> 
+    <label for="pos-tab" class="tab-label2">POS Function</label>
+    <div class="tab-content2">
+        <a href="/web#menu_id=276&amp;action=373" class="button" target="_blank">View Journal</a>
+        <button>Paid outs</button>
+        <button>Paid Ins</button>
+        <button>Safe drop/Cash drop</button>
+        <button>Tank Readings</button>
+        <button>Shift End </button>
+        <button>History</button>
+        <button>Intermediate reports</button>
+    </div>
+  </div>
 
 </div>
 

@@ -716,7 +716,7 @@ odoo.define('pos_promotion', function (require) {
                                 singlePromotion.productsDetails = singlePromotion.products.map(product => this.pos.db.get_product_by_id(product));
                                 singlePromotion.productNames = singlePromotion.productsDetails.map(productsDetail => productsDetail.display_name);
                                 singlePromotion.freeProductsDetails = this.pos.db.get_product_by_id(singlePromotion.freeProduct.id);
-                                singlePromotion.reductionAmount = freeProductsDetails.price;
+                                singlePromotion.reductionAmount = - singlePromotion.freeProductsDetails.price;
                                 singlePromotion['promotion_' + this.pos.promotionIds[promotionId]] = true;
                                 this.pos.promotionsToApply.push(singlePromotion);
 
