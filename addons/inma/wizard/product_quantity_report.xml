@@ -39,7 +39,7 @@
         </record>
 
 		<record id="action_product_quantity" model="ir.actions.act_window">
-            <field name="name">Consumables Stock Report</field>
+            <field name="name">Consumables Stock Report(only item to be added)</field>
             <field name="res_model">product.category.report</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

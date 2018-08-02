@@ -149,7 +149,7 @@ class concrete_planning(models.Model):
 
 			#Ring id generation
 			last_ring_id = ()
-			actual_plan_ids = self.env['actual.planning'].search([('project_id','=',self.project_id.id)],order='id desc')
+			actual_plan_ids = self.env['actual.planning'].search([('project_id','=',self.project_id.id)],order='plan_date desc')
 			for actual_id in actual_plan_ids:
 				if actual_id.actual_concrete_schedule_ids:
 					last_ring_id = self.env['actual.concrete.schedule'].search([('actual_plan_id','=',actual_id.id),('state','=','done')],order='id desc', limit=1)

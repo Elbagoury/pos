@@ -25,7 +25,7 @@ class MrpProductProduce(models.TransientModel):
         res = super(MrpProductProduce, self).default_get(fields)
         res['product_qty'] = self._get_product_qty()
         stock_production_lot = self.env['stock.production.lot']
-        last_lot_id = stock_production_lot.search([('product_id','=',res['product_id'])],order='name desc', limit=1)
+        last_lot_id = stock_production_lot.search([('product_id','=',res['product_id'])],order='id desc', limit=1)
         res['segment_count'] = int(last_lot_id.name)+1
         return res
 
