@@ -9,53 +9,49 @@
 							<br/>
 							<br/>
 							<table class="table table-condensed table-bordered">
-								<tr style="font-size: 12px; font-weight: bold;">
-									<td colspan="8" align="center" style="font-size: 16px; border: 2px solid black;"><strong>Stock Requirement Memo</strong></td>
+								<tr style="font-size: 12px; font-weight: bold; border: 2px solid black;">
+									<td colspan="4" align="center" style="font-size: 16px;"><strong>Stock Requirement Memo</strong></td>
 								</tr>
-								<tr style="font-size: 12px; font-weight: bold;">
-									<td colspan="8" align="center" style="font-size: 16px; border: 2px solid black;"><strong>INMA INTERNATIONAL LTD</strong></td>
-								</tr>
-								<tr style = "border: 2px solid black;">
-									<td rowspan="3" colspan="5" align="left" style="font-size: 14px; border: 2px solid black;">To<br/>The Project Director, IIL<br/>Head Office, Chennai - 600086</td>
-									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in; border: 2px solid black;"><strong>Project:</strong></td>
-									<td colspan="2" align="left" style="font-size: 14px; border: 2px solid black;"><span t-field="o.project_id.name"/></td>
+								<tr style="font-size: 12px; font-weight: bold; border: 2px solid black;">
+									<td colspan="4" align="center" style="font-size: 16px; "><strong>INMA INTERNATIONAL LTD</strong></td>
 								</tr>
 								<tr style = "border: 2px solid black;">
-									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in; border: 2px solid black;"><strong>Date:</strong></td>
-									<td colspan="2" align="left" style="font-size: 14px; border: 2px solid black;"><span t-field="o.date"/></td>
+									<td rowspan="3" colspan="2" align="left" style="font-size: 14px;">To<br/>The Project Director, IIL<br/>Head Office, Chennai - 600086</td>
+									<td align="left" style="font-size: 14px; font-weight: bold; border: 2px solid black;"><strong>Project:</strong></td>
+									<td colspan="1" align="left" style="font-size: 14px; border: 2px solid black;"><span t-field="o.project_id.name"/></td>
 								</tr>
 								<tr style = "border: 2px solid black;">
-									<td align="left" style="font-size: 14px; font-weight: bold; width: 1in; border: 2px solid black;"><strong>Project SRM No:</strong></td>
-									<td colspan="4" align="left" style="font-size: 14px; border: 2px solid black;"><span t-field="o.name"/></td>
+									<td align="left" style="font-size: 14px; font-weight: bold; border: 2px solid black;"><strong>Date:</strong></td>
+									<td colspan="1" align="left" style="font-size: 14px; border: 2px solid black;"><span t-field="o.date" t-field-options="{&quot;format&quot;: &quot;dd/MM/yy&quot;}"/></td>
 								</tr>
 								<tr style = "border: 2px solid black;">
-									<td colspan="8" align="left" style="font-size: 14px; font-weight: bold; width: 1in; border: 2px solid black;">Please send the following on / before</td>
+									<td align="left" style="font-size: 14px; font-weight: bold; border: 2px solid black;"><strong>Project SRM No:</strong></td>
+									<td colspan="1" align="left" style="font-size: 14px; border: 2px solid black;"><span t-field="o.name"/></td>
+								</tr>
+								<tr style = "border: 2px solid black;">
+									<td colspan="4" align="left" style="font-size: 14px; font-weight: bold; border: 2px solid black;">Please send the following on / before</td>
 								</tr>
 								<tr style="font-size: 14px; font-weight: bold; border: 2px solid black;">
-									<td colspan="1" align="center" style="width: 4in; border: 2px solid black;"><strong>S.No</strong></td>
-									<td colspan="3" align="center" style="width: 1in; border: 2px solid black;"><strong>Product</strong></td>
-									<td colspan="3" align="center" style="width: 1.5in; border: 2px solid black;"><strong>Specitication</strong></td>
-									<td colspan="1" align="center" style="width: 2in; border: 2px solid black;"><strong>Quantity</strong></td>
+									<td colspan="1" align="left" style="border: 2px solid black;"><strong>S.No</strong></td>
+									<td colspan="1" align="center" style="border: 2px solid black;"><strong>Product</strong></td>
+									<td colspan="1" align="center" style="border: 2px solid black;"><strong>Specitication</strong></td>
+									<td colspan="1" align="center" style="border: 2px solid black;"><strong>Quantity</strong></td>
 								</tr>
 								<tr t-foreach="o.stock_requirement_product_ids" t-as="line" style="font-size: 12px; border: 2px solid black;">
-									<td colspan="1" align="left" style = "border: 2px solid black;">
+									<td colspan="1" align="left" style="border: 2px solid black;">
 <!--
 										<span t-field="line.name"/>
 -->
 									</td>
-									<td colspan="3" align="left" style = "border: 2px solid black;">
+									<td colspan="1" align="left" style="border: 2px solid black;">
 										<span t-field="line.product_temp_id.name"/>
 									</td>
-									<td colspan="3" align="left" style = "border: 2px solid black;">
-										<span t-raw="line.product_id.name"/>-<span t-raw="line.product_id.attribute_value_ids.attribute_id.name"/>-<span t-raw="line.product_id.attribute_value_ids.name"/>
+									<td colspan="1" align="left" style="border: 2px solid black;">
+										<span t-raw="line.specification"/>
 									</td>
-									<td colspan="1" align="right" style = "border: 2px solid black;">
+									<td colspan="1" align="right" style="border: 2px solid black;">
 										<span t-field="line.quantity"/>
 									</td>
-								</tr>
-								<tr rowspan="5" colspan="8"/>
-								<tr style = "border: 2px solid black;">
-									<td colspan="8" align="left" style="font-size: 14px; font-weight: bold; width: 1in;">Please send the following on / before</td>
 								</tr>
 							</table>
 							<br/>
