@@ -37,12 +37,15 @@
 									<td colspan="1" align="center" style="border: 2px solid black;"><strong>Specitication</strong></td>
 									<td colspan="1" align="center" style="border: 2px solid black;"><strong>Quantity</strong></td>
 								</tr>
+								<t t-set="i" t-value="1"/>
 								<tr t-foreach="o.stock_requirement_product_ids" t-as="line" style="font-size: 12px; border: 2px solid black;">
 									<td colspan="1" align="left" style="border: 2px solid black;">
+										 <span t-esc="i"/> 
 <!--
 										<span t-field="line.name"/>
 -->
 									</td>
+
 									<td colspan="1" align="left" style="border: 2px solid black;">
 										<span t-field="line.product_temp_id.name"/>
 									</td>
@@ -52,6 +55,7 @@
 									<td colspan="1" align="right" style="border: 2px solid black;">
 										<span t-field="line.quantity"/>
 									</td>
+									<t t-set="i" t-value="i+1"/>
 								</tr>
 							</table>
 							<br/>
