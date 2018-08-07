@@ -14,7 +14,7 @@
 """,
     'website': 'https://www.odoo.com/page/crm',
     'depends': [
-        'crm','purchase',
+        'crm','purchase','sale',
     ],
     'data': [
         'views/crm_view.xml',

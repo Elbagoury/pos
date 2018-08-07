@@ -10,10 +10,14 @@ class Lead(models.Model):
     _inherit = "crm.lead"
 
     source = fields.Many2one('source.name','Source')
-    pre_experience = fields.Selection([('1','Very Low'),('2','Low'),('3','medium'),('4','High'), ('5','Very High')],'Previous Experience with cilent')
-    worth_client = fields.Selection([('1','Very Low'),('2','Low'),('3','medium'),('4','High'), ('5','Very High')],'Worthiness of the cilent')
+    pre_experience = fields.Selection([('1','Very Low'),('2','Low'),('3','medium'),('4','High'), ('5','Very High')],'Previous Experience with Cilent')
+    worth_client = fields.Selection([('1','Very Low'),('2','Low'),('3','medium'),('4','High'), ('5','Very High')],'Worthiness of the Cilent')
     serious_enquiry = fields.Selection([('1','Poor'),('2','Average'),('3','Good'),('4','Very Good'), ('5','Excellent')],'Seriousness of the Enquiry')
     budget_enquiry = fields.Selection([('1','Poor'),('2','Average'),('3','Good'),('4','Very Good'), ('5','Excellent')],'Budgetory or Firm Enquiry')
+    feedback = fields.Text("FeedBack")
+    analysis = fields.Text("Analysing Cause of Failure")
+    analysis_document = fields.Binary('Failure Reason Document')
+
     
 class source_name(models.Model):
     _name = 'source.name'
@@ -22,5 +26,10 @@ class source_name(models.Model):
 
 class purchase_order_line(models.Model):
     _inherit = 'purchase.order.line'
+
+    man_hours = fields.Char('Man Hours')
+
+class sale_order_line(models.Model):
+    _inherit = 'sale.order.line'
 
     man_hours = fields.Char('Man Hours')

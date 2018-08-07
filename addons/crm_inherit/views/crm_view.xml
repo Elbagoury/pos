@@ -1,10 +1,20 @@
 <odoo>
     <!--Lead Inherit -->
-    <record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
-        <field name="name">crm.lead.form.lead.inherit</field>
+    <record id="crm_case_form_view_oppor_inherit" model="ir.ui.view">
+        <field name="name">crm.case.form.view.oppor.inherit</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
         <field name="arch" type="xml">
+            <xpath expr="/form/header/button[2]" position="replace">
+                 <button name="%(crm.crm_lead_lost_action)d"  string="Mark Lost"
+                                type="action" class="oe_highlight" invisible="1"/>
+            </xpath>
+            <xpath expr="/form/header/button[1]" position="after">
+                <button name="action_set_lost"  string="Mark Lost"
+                                type="object" class="oe_highlight"
+                                context="{'default_lead_id': active_id}"
+                                attrs="{'invisible': [('active', '=', False),('probability', '&lt;', 100)]}"/>
+            </xpath>
             <field name="phone" position="after">
                 <field name="pre_experience" widget="priority"/>
                 <field name="worth_client" widget="priority"/>
@@ -14,6 +24,19 @@
                 <field name="serious_enquiry" widget="priority"/>
                 <field name="budget_enquiry" widget="priority"/> 
             </field>
+            <xpath expr="/form/sheet/notebook/page[2]" position="after">
+                <page string="Feedback" attrs="{'invisible': [('active', '!=', False)]}">
+                    <group>
+                        <field name="feedback"/>
+                    </group>
+                </page>
+                <page string="Analysis Causes of Failure" attrs="{'invisible': [('active', '!=', False)]}">
+                    <group>
+                     <field name="analysis"/>
+                      <field name="analysis_document"/>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 
@@ -28,8 +51,52 @@
 			</xpath>  
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="replace">
 				<field name="price_unit" string="Project Cost"/>
-			</xpath>            
+			</xpath>  
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="replace">
+				<field name="product_id" string="Service"/>
+			</xpath>           
         </field>
     </record>
+
+    <!--Sales Inherit -->
+     <record id="view_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="validity_date" position="replace">
+                <field name="validity_date" string="Project Completion"/>
+            </field>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
+				<field name="man_hours"/>
+			</xpath>  
+             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="replace">
+				<field name="price_unit" string="Project Cost"/>
+			</xpath>  
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="replace">
+				<field name="product_id" string="Service"/>
+			</xpath> 
+        </field>
+    </record>   
+    
+    <!--Lead Inherit -->
+    <record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.form.lead.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/group/group[2]" position="after">
+                <group>
+                    <field name="source"/>
+                    <field name="pre_experience" widget="priority"/>
+                    <field name="worth_client" widget="priority"/>
+                </group>
+                <group>
+                    <field name="serious_enquiry" widget="priority"/>
+                    <field name="budget_enquiry" widget="priority"/> 
+                </group>
+            </xpath>
+        </field>
+    </record>    
 
 </odoo>
