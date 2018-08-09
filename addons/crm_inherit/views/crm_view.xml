@@ -30,10 +30,10 @@
                         <field name="feedback"/>
                     </group>
                 </page>
-                <page string="Analysis Causes of Failure" attrs="{'invisible': [('active', '!=', False)]}">
+                <page string="Causes of Failure" attrs="{'invisible': [('active', '!=', False)]}">
                     <group>
-                     <field name="analysis"/>
-                      <field name="analysis_document"/>
+                        <field name="analysis"/>
+                        <field name="analysis_document"/>
                     </group>
                 </page>
             </xpath>
@@ -65,7 +65,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <field name="validity_date" position="replace">
-                <field name="validity_date" string="Project Completion"/>
+                <field name="validity_date" string="Project Completion Date"/>
             </field>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
 				<field name="man_hours"/>

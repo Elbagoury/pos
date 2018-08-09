@@ -59,12 +59,13 @@
                 <form string="Product Quantity">
                 		<group>		
 							<field name="date"/>
+							<field name="product_types"/>
 						</group>
                 	<newline/>
                 	<notebook>
                 		<page string="Details">
 							<field name="product_stock_line_ids">
-								<tree>	
+								<tree create="false" edit="false" delete="false">	
                 					<field name="product_id"/>
                 					<field name="qty_avail"/>
                 				</tree> 
@@ -72,9 +73,10 @@
                 		</page>                	
                 	</notebook>
 						<footer>
+							<button name="print_report" string="Download as XLS" type="object" class="oe_highlight"/>
+							or
                         	<button string="Cancel" class="oe_link" special="cancel"/>                        	
                     	</footer>                	
-
                </form>
             </field>
         </record>

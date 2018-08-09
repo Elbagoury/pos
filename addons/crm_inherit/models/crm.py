@@ -15,8 +15,8 @@ class Lead(models.Model):
     serious_enquiry = fields.Selection([('1','Poor'),('2','Average'),('3','Good'),('4','Very Good'), ('5','Excellent')],'Seriousness of the Enquiry')
     budget_enquiry = fields.Selection([('1','Poor'),('2','Average'),('3','Good'),('4','Very Good'), ('5','Excellent')],'Budgetory or Firm Enquiry')
     feedback = fields.Text("FeedBack")
-    analysis = fields.Text("Analysing Cause of Failure")
-    analysis_document = fields.Binary('Failure Reason Document')
+    analysis = fields.Text("Note")
+    analysis_document = fields.Binary('Root Cause Analysis')
 
     
 class source_name(models.Model):
@@ -27,9 +27,9 @@ class source_name(models.Model):
 class purchase_order_line(models.Model):
     _inherit = 'purchase.order.line'
 
-    man_hours = fields.Char('Man Hours')
+    man_hours = fields.Char('Man Days')
 
 class sale_order_line(models.Model):
     _inherit = 'sale.order.line'
 
-    man_hours = fields.Char('Man Hours')
+    man_hours = fields.Char('Man Days')

@@ -279,17 +279,125 @@ class product_stock(models.TransientModel):
 	_name="product.stock"
 	
 	date = fields.Date('Stock Date')
+	product_types = fields.Selection([('consume','Cosumable'),('stockable','Stockable')], 'Product Type')
 	product_stock_line_ids = fields.One2many('product.stock.line', 'product_stock_id', 'Product Details')
-	
-	@api.onchange('date')
+	file_f = fields.Binary("File", readonly=True)	
+	file_name = fields.Char("File Name",size=128, readonly=True)   
+
+	@api.onchange('date', 'product_types')
 	def onchange_date(self):
-		if self.date:
+		if self.date and self.product_types:
 			product_stock = []
-			self.env.cr.execute("""SELECT product_id as product_id,SUM(quantity) as quantity FROM stock_history where date::date <= %s GROUP BY product_id""",(self.date,))
+			self.env.cr.execute("""SELECT product_id as product_id,SUM(quantity) as quantity FROM stock_history where date::date <= %s and product_type = %s GROUP BY product_id""",(self.date,self.product_types))
 			for stock_dict in self.env.cr.dictfetchall():
 				#print stock_dict['product_id'], stock_dict['quantity']
 				product_stock.append((0, 0, {'product_id': stock_dict['product_id'],'qty_avail': stock_dict['quantity']}))
 			self.product_stock_line_ids = product_stock
+	
+	@api.multi
+	def print_report(self):
+		if self.date:
+			wbk = xlwt.Workbook()
+			borders = xlwt.Borders()
+			borders.left = xlwt.Borders.THIN
+			borders.right = xlwt.Borders.THIN
+			borders.top = xlwt.Borders.THIN
+			borders.bottom = xlwt.Borders.THIN
+			
+			style_header1 = XFStyle()
+			fnt = Font()
+			fnt.bold = True
+			fnt.height = 16*0x16
+			style_header1.font = fnt
+			al1 = Alignment()
+			al1.horz = Alignment.HORZ_CENTER
+			al1.vert = Alignment.VERT_CENTER
+			pat2 = Pattern()
+			style_header1.alignment = al1
+			style_header1.pattern = pat2
+			style_header1.borders = borders
+
+			style_header_left = XFStyle()
+			fnt = Font()
+			fnt.bold = True
+			fnt.height = 11*0x14
+			style_header_left.font = fnt
+			style_header_left.font = fnt
+			al1 = Alignment()
+			al1.horz = Alignment.HORZ_LEFT
+			al1.vert = Alignment.VERT_CENTER
+			pat2 = Pattern()
+			style_header_left.alignment = al1
+			style_header_left.pattern = pat2
+			style_header_left.borders = borders
+			
+			style_header_left1 = XFStyle()
+			fnt = Font()
+			fnt.height = 11*0x14
+			style_header_left1.font = fnt
+			style_header_left1.font = fnt
+			al1 = Alignment()
+			al1.horz = Alignment.HORZ_LEFT
+			al1.vert = Alignment.VERT_CENTER
+			pat2 = Pattern()
+			style_header_left1.alignment = al1
+			style_header_left1.pattern = pat2
+			style_header_left1.borders = borders
+
+			style_header_right1 = XFStyle()
+			fnt = Font()
+			fnt.height = 11*0x14
+			style_header_right1.font = fnt
+			style_header_right1.font = fnt
+			al1 = Alignment()
+			al1.horz = Alignment.HORZ_RIGHT
+			al1.vert = Alignment.VERT_CENTER
+			pat2 = Pattern()
+			style_header_right1.alignment = al1
+			style_header_right1.pattern = pat2
+			style_header_right1.borders = borders
+			
+			sheet1 = wbk.add_sheet('Consumable Stock Report - (Date/Period)')
+			sheet1.portrait = False
+			sheet1.col(0).width = 3000
+			sheet1.col(1).width = 10000
+			sheet1.col(2).width = 3000
+		
+			sheet1.row(0).height = 1600
+			sheet1.row(1).height = 400
+			
+			row = 0
+			sheet1.write_merge(row, row, 1, 4, 'Consumable Stock Report - (Date/Period)', style_header1)
+			row = 1
+			sheet1.write(row, 0,  'Sr.No', style_header_left)			
+			sheet1.write_merge(row, row, 1, 2,  'Consumable Product', style_header_left)
+			sheet1.write_merge(row, row, 3, 4, 'Quantity Available', style_header_left)
+			
+			i = 0
+			row = 2
+
+			for product in self:
+				for product_stock in product.product_stock_line_ids:					
+					i = i+1
+					sheet1.write(row, 0, i, style_header_left1)
+					sheet1.write_merge(row, row, 1, 2, product_stock.product_id.name, style_header_left1)
+					sheet1.write_merge(row, row, 3, 4, product_stock.qty_avail, style_header_right1)
+					
+					row += 1    
+										
+			"""Parsing data as string """
+			file_data = StringIO.StringIO()
+			o=wbk.save(file_data)
+			"""string encode of data in wksheet"""
+			out = base64.encodestring(file_data.getvalue())
+			"""returning the output xls as binary"""
+			filename = 'conusmable_report.xls'
+			self.write({'file_f':out, 'file_name':filename})
+			return {
+                   'url': '/inma/spreadsheet_report_controller/download_document?model=product.stock&field=%s&id=%s&filename=%s'%(self.file_f,self.id,self.file_name),
+                   'target': 'new',
+                   'type': 'ir.actions.act_url',
+                   }
 			
 class product_stock_line(models.TransientModel):
 	_name="product.stock.line"

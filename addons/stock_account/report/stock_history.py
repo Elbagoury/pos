@@ -22,6 +22,7 @@ class StockHistory(models.Model):
     source = fields.Char('Source')
     product_template_id = fields.Many2one('product.template', 'Product Template', required=True)
     serial_number = fields.Char('Lot/Serial Number', required=True)
+    product_type = fields.Char('Product Type')
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -91,7 +92,8 @@ class StockHistory(models.Model):
                 date,
                 COALESCE(SUM(price_unit_on_quant * quantity) / NULLIF(SUM(quantity), 0), 0) as price_unit_on_quant,
                 source,
-                string_agg(DISTINCT serial_number, ', ' ORDER BY serial_number) AS serial_number
+                string_agg(DISTINCT serial_number, ', ' ORDER BY serial_number) AS serial_number,
+                product_type
                 FROM
                 ((SELECT
                     stock_move.id AS id,
@@ -101,6 +103,7 @@ class StockHistory(models.Model):
                     stock_move.product_id AS product_id,
                     product_template.id AS product_template_id,
                     product_template.categ_id AS product_categ_id,
+                    product_template.product_types AS product_type,
                     quant.qty AS quantity,
                     stock_move.date AS date,
                     quant.cost as price_unit_on_quant,
@@ -136,6 +139,7 @@ class StockHistory(models.Model):
                     stock_move.product_id AS product_id,
                     product_template.id AS product_template_id,
                     product_template.categ_id AS product_categ_id,
+                    product_template.product_types AS product_type,
                     - quant.qty AS quantity,
                     stock_move.date AS date,
                     quant.cost as price_unit_on_quant,
@@ -164,5 +168,5 @@ class StockHistory(models.Model):
                     dest_location.usage not in ('internal', 'transit'))
                 ))
                 AS foo
-                GROUP BY move_id, location_id, company_id, product_id, product_categ_id, date, source, product_template_id
+                GROUP BY move_id, location_id, company_id, product_id, product_categ_id, date, source, product_template_id,product_type
             )""")
