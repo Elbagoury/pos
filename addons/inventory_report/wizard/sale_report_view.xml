@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	
+    	<record id="sale_report_form" model="ir.ui.view">
+            <field name="name">view.sale.report</field>
+            <field name="model">sales.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Sales Report" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="order_from_date" required="1"/>
+							<field name="filter_by"/>
+							<field name="state" attrs="{'invisible': [('filter_by','!=', 'state')]}"/>
+							<field name="user_id" attrs="{'invisible': [('filter_by','!=', 'users')]}" options='{"no_open": True, "no_create": True}'/>
+							<field name="payment_term_id" attrs="{'invisible': [('filter_by','!=', 'payment_term')]}" options='{"no_open": True, "no_create": True}'/>
+							<field name="team_id" attrs="{'invisible': [('filter_by','!=', 'team')]}" options='{"no_open": True, "no_create": True}'/>
+						</group>	
+						<group>
+							<field name="order_to_date" required="1"/>
+						</group>
+					</group>
+                	<newline/>
+                	<notebook>
+                		<page string="Sales Report Details">
+							<field name="sale_report_line_ids" nolabel="1" readonly="1">
+								<tree create="false" edit="false" delete="false">	
+                					<field name="order_date"/>
+                					<field name="order_no"/>
+                					<field name="customer_id"/>
+									<field name="state"/>
+									<field name="user_id"/>
+									<field name="payment_term_id"/>
+									<field name="team_id"/>
+									<field name="product_id"/>
+									<field name="product_uom_qty"/>
+									<field name="unit_measure"/>
+									<field name="unit_price"/>
+									<field name="tax"/>
+									<field name="total"/>	
+                				</tree> 
+							</field>
+                		</page>                	
+                	</notebook>
+                	<group>
+						<field name="total_quantity" readonly="1"/>
+						<field name="total_unit_price" readonly="1"/>
+						<field name="total_taxes" readonly="1"/>
+						<field name="total_amount" readonly="1"/>
+					</group>
+                	<footer>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+		<record id="action_sales_report" model="ir.actions.act_window">
+            <field name="name">Sales Report</field>
+            <field name="res_model">sales.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="sale_report_form"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_sales_report" id="menu_sales_report"
+            parent="sales_team.menu_sale_report" sequence="7"/>
+            
+</odoo> 

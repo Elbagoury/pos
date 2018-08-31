@@ -58,8 +58,13 @@
             <field name="arch" type="xml">
                 <form string="Product Quantity">
                 		<group>		
-							<field name="date"/>
-							<field name="product_types"/>
+							<group>
+								<field name="date"/>
+								<field name="product_types"/>
+							</group>
+							<group>
+								<field name="day" readonly="1"/>
+							</group>
 						</group>
                 	<newline/>
                 	<notebook>
@@ -67,6 +72,7 @@
 							<field name="product_stock_line_ids">
 								<tree create="false" edit="false" delete="false">	
                 					<field name="product_id"/>
+									<field name="unit_id"/>
                 					<field name="qty_avail"/>
                 				</tree> 
 							</field>
@@ -82,7 +88,7 @@
         </record>
 
 		<record id="action_product_stock" model="ir.actions.act_window">
-            <field name="name">Consumable Stock Report - (Date/Period)</field>
+            <field name="name">Consumable Stock Report - (Date)</field>
             <field name="res_model">product.stock</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

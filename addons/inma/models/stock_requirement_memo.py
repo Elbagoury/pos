@@ -36,7 +36,7 @@ class stock_requirement_memo(models.Model):
 	state = fields.Selection([('confirm','Confirm')], 'State')
 	partner_id = fields.Many2one('res.partner','Mail User')
 	cc_user = fields.Many2many('res.users','mail_user_rel','uid','srmid','CC User' )
-	from_csr = fields.Boolean('From CSR')
+	from_csr = fields.Boolean('From CRO')
 
 	@api.onchange('project_id')
 	def onchange_project_id(self):

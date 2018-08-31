@@ -31,7 +31,7 @@ class product_category_report(models.TransientModel):
 	product_id = fields.Many2one('product.product','Product')
 	product_quantity_ids = fields.One2many('product.quantity.report', 'product_category_report_id', 'Product Details')
 	file_f = fields.Binary("File", readonly=True)	
-	file_name = fields.Char("File Name",size=128, readonly=True)    
+	file_name = fields.Char("File Name",size=0, readonly=True)    
 	
 	@api.onchange('category', 'product_id')
 	def on_change_category(self):
@@ -279,6 +279,7 @@ class product_stock(models.TransientModel):
 	_name="product.stock"
 	
 	date = fields.Date('Stock Date')
+	day = fields.Char('Day')
 	product_types = fields.Selection([('consume','Cosumable'),('stockable','Stockable')], 'Product Type')
 	product_stock_line_ids = fields.One2many('product.stock.line', 'product_stock_id', 'Product Details')
 	file_f = fields.Binary("File", readonly=True)	
@@ -286,12 +287,16 @@ class product_stock(models.TransientModel):
 
 	@api.onchange('date', 'product_types')
 	def onchange_date(self):
+		if self.date:
+			self.day = datetime.strptime(self.date, '%Y-%m-%d').strftime('%A')
 		if self.date and self.product_types:
 			product_stock = []
 			self.env.cr.execute("""SELECT product_id as product_id,SUM(quantity) as quantity FROM stock_history where date::date <= %s and product_type = %s GROUP BY product_id""",(self.date,self.product_types))
 			for stock_dict in self.env.cr.dictfetchall():
 				#print stock_dict['product_id'], stock_dict['quantity']
-				product_stock.append((0, 0, {'product_id': stock_dict['product_id'],'qty_avail': stock_dict['quantity']}))
+				product = self.env['product.product'].search([('id','=',stock_dict['product_id'])])
+				product_stock.append((0, 0, {'product_id': stock_dict['product_id'],'unit_id':product.uom_id.id, 'qty_avail': stock_dict['quantity']}))
+			
 			self.product_stock_line_ids = product_stock
 	
 	@api.multi
@@ -322,7 +327,6 @@ class product_stock(models.TransientModel):
 			fnt.bold = True
 			fnt.height = 11*0x14
 			style_header_left.font = fnt
-			style_header_left.font = fnt
 			al1 = Alignment()
 			al1.horz = Alignment.HORZ_LEFT
 			al1.vert = Alignment.VERT_CENTER
@@ -335,7 +339,6 @@ class product_stock(models.TransientModel):
 			fnt = Font()
 			fnt.height = 11*0x14
 			style_header_left1.font = fnt
-			style_header_left1.font = fnt
 			al1 = Alignment()
 			al1.horz = Alignment.HORZ_LEFT
 			al1.vert = Alignment.VERT_CENTER
@@ -347,7 +350,6 @@ class product_stock(models.TransientModel):
 			style_header_right1 = XFStyle()
 			fnt = Font()
 			fnt.height = 11*0x14
-			style_header_right1.font = fnt
 			style_header_right1.font = fnt
 			al1 = Alignment()
 			al1.horz = Alignment.HORZ_RIGHT
@@ -403,6 +405,7 @@ class product_stock_line(models.TransientModel):
 	_name="product.stock.line"
 	
 	product_id = fields.Many2one('product.product','Consumables Product')
+	unit_id = fields.Many2one('product.uom','Unit')
 	qty_avail = fields.Float('Quantity Available')
 	product_stock_id = fields.Many2one('product.stock', 'Product Stock Report')
 
