@@ -100,7 +100,7 @@
 								<field name="forenoon_end_time" widget="float_time"/>
 								<field name="afnoon_start_time" widget="float_time"/>
 								<field name="afnoon_end_time" widget="float_time"/>
-								<field name="total_hours_worked" widget="float_time"/>
+								<field name="total_hours_worked" widget="float_time" />
 								<field name="extra_hours" widget="float_time"/>
 								<field name="total_hours" widget="float_time"/>
 								<field name="remarks"/>

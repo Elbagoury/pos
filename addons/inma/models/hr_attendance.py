@@ -133,12 +133,19 @@ class workbase_employee_line(models.Model):
 	def onchange_time(self):
 		if self.forenoon_start_time:
 			fore_total = abs(self.forenoon_start_time - self.forenoon_end_time)
-			noon_total = abs(self.afnoon_start_time-self.afnoon_end_time)
+			noon_total = abs(self.afnoon_start_time - self.afnoon_end_time)
 			total = fore_total + noon_total
 			#result = '{0:02.0f}:{1:02.0f}'.format(*divmod(total * 60, 60))
-			self.total_hours_worked = total
+			
+			if total > 8:
+				self.total_hours_worked = 8
+				self.extra_hours = total - 8
+			else:
+				self.total_hours_worked = total
+				self.extra_hours = 0
+				self.total_hours = total
 			if self.extra_hours:
-				self.total_hours = total + self.extra_hours
+				self.total_hours = self.total_hours_worked + self.extra_hours
 
 	@api.onchange('extra_hours')
 	def onchange_extrahours(self):

@@ -343,33 +343,49 @@ class concrete_planning_schedule(models.Model):
 	primary_demoulding_time = fields.Float("Primary Demoulding Time")
 	cage_fixing_start_time = fields.Float("Cage Fixing Start Time")
 	cage_fixing_end_time = fields.Float("Cage Fixing End Time")
-	concrete_start_time = fields.Float("Start Time")
-	concrete_end_time = fields.Float("End Time")
+	concrete_start_time = fields.Float("Concrete Start Time")
+	concrete_end_time = fields.Float("Concrete End Time")
 	finishing = fields.Float("Finishing")
-	stream_start_time = fields.Float("Start Time")
-	stream_end_time = fields.Float("End Time")
+	stream_start_time = fields.Float("Stream Start Time")
+	stream_end_time = fields.Float("Stream End Time")
 	demoudling = fields.Float("Demoulding")
 	remarks = fields.Text("Remarks")
 	shift = fields.Many2one('shift.master','Shift')
 	concrete_plan_id = fields.Many2one('concrete.planning', "Concrete Planning", ondelete='cascade')
 	segment_id = fields.Many2many('product.product','segment_product_plan_rel','product_id','plan_id','Segment')
         	
-	# @api.onchange('cage_fixing_start_time')
-	# def onchange_cage_fixing_start_time(self):
-	# 	if self.cage_fixing_start_time:
-	# 		transaction_schedule = self.env['daily.planning.transaction'].search([('state','=','active')])
-	# 		if transaction_schedule:
-	# 			self.cage_fixing_end_time = self.cage_fixing_start_time + transaction_schedule.cage_fix_period
-	# 			self.concrete_start_time = self.cage_fixing_end_time + transaction_schedule.concrete_start_period
-	# 			self.concrete_end_time = self.concrete_start_time + transaction_schedule.concrete_end_period
-	# 			self.finishing = self.concrete_end_time + transaction_schedule.finish_period
-	# 			self.stream_start_time = self.finishing + transaction_schedule.steam_start_period
-	# 			self.stream_end_time = self.stream_start_time + transaction_schedule.steam_end_period
-	# 			self.demoudling = self.stream_end_time + transaction_schedule.demoulding_period
-	# 		else:
-	# 			raise ValidationError(_("Please check any one daily transaction schedule record is active state"))
+	@api.onchange('cage_fixing_start_time')
+	def onchange_cage_fixing_start_time(self):
+	 	if self.cage_fixing_start_time:
+	 		transaction_schedule = self.env['daily.planning.transaction'].search([('state','=','active')])
+	 		if transaction_schedule:
+	 			self.cage_fixing_end_time = self.cage_fixing_start_time + transaction_schedule.cage_fix_period
+	 			self.concrete_start_time = self.cage_fixing_end_time + transaction_schedule.concrete_start_period
+	 			self.concrete_end_time = self.concrete_start_time + transaction_schedule.concrete_end_period
+	 			self.finishing = self.concrete_end_time + transaction_schedule.finish_period
+	 			self.stream_start_time = self.finishing + transaction_schedule.steam_start_period
+	 			self.stream_end_time = self.stream_start_time + transaction_schedule.steam_end_period
+	 			self.demoudling = self.stream_end_time + transaction_schedule.demoulding_period
+	 		else:
+	 			raise ValidationError(_("Please check any one daily transaction schedule record is active state"))
 				
-				
+	@api.onchange('cage_fixing_end_time','concrete_start_time','concrete_end_time','finishing','stream_start_time','stream_end_time','demoudling')
+	def onchange_time(self):
+		if self.cage_fixing_end_time > 24:
+			self.cage_fixing_end_time = self.cage_fixing_end_time - 24
+		if self.concrete_start_time > 24:
+			self.concrete_start_time = self.concrete_start_time - 24
+		if self.concrete_end_time > 24:
+			self.concrete_end_time = self.concrete_end_time - 24
+		if self.finishing > 24:
+			self.finishing = self.finishing - 24
+		if self.stream_start_time > 24:
+			self.stream_start_time = self.stream_start_time - 24
+		if self.stream_end_time > 24:
+			self.stream_end_time = self.stream_end_time - 24
+		if self.demoudling > 24:
+			self.demoudling = self.demoudling - 24
+
 class actual_planning(models.Model):
 	_name="actual.planning"
 	

@@ -34,7 +34,7 @@
 								<field name="finishing" widget="float_time"/>
 								<field name="stream_start_time" widget="float_time"/>
 								<field name="stream_end_time" widget="float_time"/>
-								<field name="demoudling"/>
+								<field name="demoudling" widget="float_time"/>
 								<field name="remarks"/>
 							</tree>
 						</field>
@@ -119,7 +119,7 @@ class="oe_highlight"/>
 								<field name="finishing_time" widget="float_time"/>
 								<field name="steam_start_time" widget="float_time"/>
 								<field name="steam_end_time" widget="float_time"/>
-								<field name="demoudling"/>
+								<field name="demoudling" widget="float_time"/>
 								<field name="state" required="1"/>
 								<field name="remarks" attrs="{'required':[('state','=', 'archived')]}"/>
 							</tree>
@@ -141,7 +141,7 @@ class="oe_highlight"/>
 								<field name="finishing" widget="float_time"/>
 								<field name="stream_start_time" widget="float_time"/>
 								<field name="stream_end_time" widget="float_time"/>
-								<field name="demoudling"/>
+								<field name="demoudling" widget="float_time"/>
 								<field name="remarks"/>
 							</tree>
 						</field>
