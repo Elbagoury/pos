@@ -33,10 +33,10 @@ var exports = {};
 exports.PosModel = Backbone.Model.extend({
     initialize: function(session, attributes) {
         Backbone.Model.prototype.initialize.call(this, attributes);
-        var  self = this;
+        var self = this;
         this.flush_mutex = new Mutex();                   // used to make sure the orders are sent to the server once at time
         this.chrome = attributes.chrome;
-        this.gui    = attributes.gui;
+        this.gui = attributes.gui;
 
         this.proxy = new devices.ProxyDevice(this);              // used to communicate to the hardware devices via a local proxy
         this.barcode_reader = new devices.BarcodeReader({'pos': this, proxy:this.proxy});
@@ -67,7 +67,7 @@ exports.PosModel = Backbone.Model.extend({
 
         // these dynamic attributes can be watched for change by other models or widgets
         this.set({
-            'synch':            { state:'connected', pending:0 }, 
+            'synch': { state:'connected', pending:0 }, 
             'orders':           new OrderCollection(),
             'selectedOrder':    null,
             'selectedClient':   null,

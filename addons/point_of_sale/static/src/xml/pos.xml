@@ -343,16 +343,16 @@
                 </div>
             </div>
             <div class="rightpane">
-<div class="tabs">
-  <div class="tab">
-    <input type="radio" name="postab" id="fuel-tab" checked="checked" class="tab-switch"></input> 
-    <label for="fuel-tab" class="tab-label2">Fuel</label>
-    <div class="tab-content2"><span class="placeholder-DomPumpWidget" /></div>
-  </div>
-  <div class="tab">
-    <input type="radio" name="postab" id="pro-tab" class="tab-switch"></input> 
-    <label for="pro-tab" class="tab-label2">Products</label>
-    <div class="tab-content2"><table class="layout-table">
+<span class="placeholder-DomPumpWidget" />
+<div class="posfunction">
+	<a href="/web#menu_id=358&amp;action=408" class="button" target="_blank">View Journal</a>
+        <a href="/web#menu_id=358&amp;action=408" class="button" target="_blank">Paid In/Out</a>
+        <a href="/web#menu_id=357&amp;action=407" class="button" target="_blank">Safe drop/Cash drop</a>
+        <a href="#" class="button" target="_blank">Tank Readings</a>
+        <a href="#" class="button" target="_blank">Shift End </a>
+        <a href="#" class="button" target="_blank">History</a>
+        <a href="#" class="button" target="_blank">Intermediate reports</a></div>
+<table class="layout-table">
                     <tr class="header-row">
                         <td class="header-cell">
                             <span class="placeholder-ProductCategoriesWidget" />
@@ -368,26 +368,7 @@
                         </td>
                     </tr>
 
-                </table></div>
-  </div>
-  <div class="tab">
-    <input type="radio" name="postab" id="pos-tab" class="tab-switch"></input> 
-    <label for="pos-tab" class="tab-label2">POS Function</label>
-    <div class="tab-content2">
-        <a href="/web#menu_id=276&amp;action=373" class="button" target="_blank">View Journal</a>
-        <button>Paid outs</button>
-        <button>Paid Ins</button>
-        <button>Safe drop/Cash drop</button>
-        <button>Tank Readings</button>
-        <button>Shift End </button>
-        <button>History</button>
-        <button>Intermediate reports</button>
-    </div>
-  </div>
-
-</div>
-
-                
+                </table>
             </div>
         </div>
     </t>

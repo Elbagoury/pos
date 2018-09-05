@@ -162,6 +162,7 @@ odoo.define('pos_screen.pumps', function (require) {
                 fuel_capacity_div.find('.left_fuel').text(left_fuel);
             }
         }
+
     });
 
     // START RENDER NOZLES AND PUMPS
@@ -177,12 +178,16 @@ odoo.define('pos_screen.pumps', function (require) {
             var new_channel = this.get_nozle_full_channel_name(nozle_channel_name);
             this.bus_nozle.add_channel(new_channel);
             this.pos.ready.then(function () {
-                self.start_nozle_longpolling();
+	    self.start_nozle_longpolling();
+	    var SINGLE_pump_WIDTH = $('.pump-nozle-block').width();
+	    var container_width = SINGLE_pump_WIDTH * $(".pump-nozle-block").length + 130;
+	    $(".pump-list").css("width", container_width);
             });
             this.click_nozle_handler = function(){
                 var nozle_id = $('.nozle', this).data('nozle-id');
                 self.pos.open_nozle_approval_pop_up(nozle_id);
             };
+
         },
 
         start_nozle_longpolling: function(){
@@ -242,6 +247,7 @@ $( "#fuel-tab" ).trigger( "click" );
                     pump_nozle_container.appendChild(nozles_node);
                 pump_list_container.appendChild(pump_nozle_container)
             }
+
         },
 
         render_nozle: function(nozles){
