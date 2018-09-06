@@ -10,6 +10,8 @@ var formats = require('web.formats');
 var session = require('web.session');
 var time = require('web.time');
 var utils = require('web.utils');
+/* Check */
+// var NotificationManager = require('web.notification').NotificationManager;
 
 var QWeb = core.qweb;
 var _t = core._t;
@@ -588,6 +590,16 @@ exports.PosModel = Backbone.Model.extend({
         var order = new exports.Order({},{pos:this});
         this.get('orders').add(order);
         this.set('selectedOrder', order);
+        /* Check */
+        /* if(order.collection.length > 2){
+            this.notification_manager = new NotificationManager(this);
+            this.notification_manager.notify(
+                _t('adasdasd'),
+                _t('asdasdasdsadasdasdsadsafasddas'),
+                false
+            );            // this.notification_manager.notify(e.data.title, e.data.message, e.data.sticky);
+            // $('.notification').html("<div class='alert alert-danger'>asdasdgsahdgh</div>");
+        } */
         return order;
     },
     // load the locally saved unpaid orders for this session.

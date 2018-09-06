@@ -716,7 +716,7 @@ odoo.define('pos_promotion', function (require) {
                                 singlePromotion.productsDetails = singlePromotion.products.map(product => this.pos.db.get_product_by_id(product));
                                 singlePromotion.productNames = singlePromotion.productsDetails.map(productsDetail => productsDetail.display_name);
                                 singlePromotion.freeProductsDetails = this.pos.db.get_product_by_id(singlePromotion.freeProduct.id);
-                                singlePromotion.reductionAmount = - singlePromotion.freeProductsDetails.price;
+                                singlePromotion.reductionAmount = -singlePromotion.freeProductsDetails.price;
                                 singlePromotion['promotion_' + this.pos.promotionIds[promotionId]] = true;
                                 this.pos.promotionsToApply.push(singlePromotion);
 
@@ -903,6 +903,13 @@ odoo.define('pos_promotion', function (require) {
             if (check_all_promotions_related_to_product && this.checking_apply_specified_goods_promotion_id()) {
                 can_apply = true;
             }
+            console.log('can_apply', can_apply);
+            if (can_apply) {
+                var order = this.pos.get('selectedOrder');
+                if (order) {
+                    order.compute_promotion()
+                }
+            }
 
             return can_apply;
         }
@@ -1006,10 +1013,18 @@ odoo.define('pos_promotion', function (require) {
                     order.promotion_amount = round_pr(promotion_amount, this.pos.currency.rounding);
                 }
                 var can_apply = order.current_order_can_apply_promotion();
-                var buttons = this.getParent().action_buttons;
-                if (buttons && buttons.button_promotion) {
-                    buttons.button_promotion.highlight(can_apply);
+                console.log('can_apply', can_apply);
+
+                if (can_apply) {
+                    var order = this.pos.get('selectedOrder');
+                    if (order) {
+                        order.compute_promotion()
+                    }
                 }
+                // var buttons = this.getParent().action_buttons;
+                // if (buttons && buttons.button_promotion) {
+                //     buttons.button_promotion.highlight(can_apply);
+                // }
             }
         }
     });
