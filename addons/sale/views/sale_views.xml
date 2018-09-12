@@ -68,7 +68,7 @@
             <field name="name">sale.order.kanban</field>
             <field name="model">sale.order</field>
             <field name="arch" type="xml">
-                <kanban class="o_kanban_mobile">
+                <kanban class="o_kanban_mobile o_opportunity_kanban" default_group_by="state">
                     <field name="name"/>
                     <field name="partner_id"/>
                     <field name="amount_total"/>

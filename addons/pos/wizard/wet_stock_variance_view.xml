@@ -1,0 +1,38 @@
+<odoo>
+
+<record id="view_wet_stock_variance_report" model="ir.ui.view">
+            <field name="name">view.wet.stock.variance.report</field>
+            <field name="model">wet.stock.variance.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Wet Stock Variance" create="false" edit="false" >
+					<group>
+						<group>
+							<field name="from_date"/>
+						</group>	
+						<group>
+							<field name="till_date"/>
+						</group>
+					</group>
+                	<footer>
+                    	<button name="print_report" string="Generate" type="object" class="oe_highlight"/>
+						<button string="Cancel" class="oe_link" special="cancel"/>
+                	</footer>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_wet_stock_variance_report" model="ir.actions.act_window">
+            <field name="name">Wet Stock Variance</field>
+            <field name="res_model">wet.stock.variance.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wet_stock_variance_report"/>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_wet_stock_variance_report" id="menu_wet_stock_variance_report"
+            parent="reports_menu" sequence="5"/>
+
+
+</odoo>

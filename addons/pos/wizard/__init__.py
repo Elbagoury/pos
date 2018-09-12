@@ -9,3 +9,4 @@ import receipts_report
 import sales_summary_report
 import payment_summary_report
 import pay_in_out_report
+import wet_stock_variance_report

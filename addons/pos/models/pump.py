@@ -491,17 +491,18 @@ class tank_stock_log(models.Model):
 			for line in self.env['pos.order.line'].search([('order_id','in',pos_order_list),('product_id','=',stock.tank_id.tank_type.id)]): 
 				if line:
 					sale_stock += line.qty
-			stock.sales = stock.sales + sale_stock
+			stock.sales = sale_stock
 			
 	@api.multi
 	@api.depends('delivery')
 	def _get_delivery(self):
 		for stock in self:
+			purchase_stock = 0
 			for fuel_delivery in self.env['fuel.delivery'].search([('date','=',stock.date)]):
 				purchase_stock = 0
 				for fuel_line in self.env['fuel.delivery.detail'].search([('fuel_delivery_id','=',fuel_delivery.id),('tank_id','=',stock.tank_id.id)]):
 					purchase_stock += fuel_line.fuel_qty	
-				stock.delivery = purchase_stock		
+			stock.delivery = purchase_stock		
 			#tank_purchase = self.env['tank.log'].search([('date','=',stock.date),('tank_id','=',stock.tank_id.id)])
 			#purchase_stock = 0
 			#for tank in tank_purchase:

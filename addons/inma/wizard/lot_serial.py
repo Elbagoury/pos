@@ -10,7 +10,7 @@ class generate_lot(models.TransientModel):
     def generate(self):
         lot = self.env['stock.production.lot']
         if self.product_id:
-            for i in range(1, self.count+1):
+            for i in range(1701, 1701 + (self.count+1)):
                 lot.create({'name': str(i),'product_id':self.product_id.id, 'product_qty':1})
 
     

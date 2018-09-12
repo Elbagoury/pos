@@ -149,7 +149,7 @@ class concrete_planning(models.Model):
 
 			#Ring id generation
 			last_ring_id = ()
-			actual_plan_ids = self.env['actual.planning'].search([('project_id','=',self.project_id.id)],order='plan_date desc')
+			actual_plan_ids = self.env['actual.planning'].search([('project_id','=',self.project_id.id)],order='id desc')
 			for actual_id in actual_plan_ids:
 				if actual_id.actual_concrete_schedule_ids:
 					last_ring_id = self.env['actual.concrete.schedule'].search([('actual_plan_id','=',actual_id.id),('state','=','done')],order='id desc', limit=1)
@@ -325,13 +325,10 @@ class concrete_planning(models.Model):
 			filename = 'concrete_planning_schedule.xls'
 			self.write({'file_f':out, 'file_name':filename})
 			return {
-
-                   'url': '/inma/spreadsheet_report_controller/download_document?model=concrete.planning&field=%s&id=%s&filename=%s'%(self.file_f,self.id,self.file_name),
-                   'target': 'new',
-                   'type': 'ir.actions.act_url',
-
+					'url': '/inma/spreadsheet_report_controller/download_document?model=concrete.planning&field=%s&id=%s&filename=%s'%(self.file_f,self.id,self.file_name),
+                	'target': 'new',
+                	'type': 'ir.actions.act_url',
                    }
-			
 						
 class concrete_planning_schedule(models.Model):
 	_name="concrete.planning.schedule"

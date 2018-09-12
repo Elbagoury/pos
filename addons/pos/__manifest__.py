@@ -27,6 +27,7 @@
 	'security/pos_security.xml',
 	'security/ir.model.access.csv',
 	'wizard/pay_in_out_report_view.xml',
+	'wizard/wet_stock_variance_view.xml',
     ],
     'demo': [
     ],
