@@ -72,8 +72,8 @@ access_project_name_inma_group_accounts_manager,access.project.name.inma.group.a
 access_project_name_inma_group_project_director,access.project.name.inma.group.project.director,model_project_name,inma_group_project_director,1,1,1,1
 access_project_name_inma_group_store_in_charge,access.project.name.inma.group.store.in.charge,model_project_name,inma_group_store_in_charge,1,1,1,0
 access_copies_submitted_inma_group_manager,access.copies.submitted.inma.group.manager,model_copies_submitted,inma_group_manager,1,1,1,1
-access_copies_submitted_inma_group_user,access.copies.submitted.inma.group.user,model_copies_submitted,inma_group_user,1,0,0,0
-access_copies_submitted_inma_group_site_admin_assistant,access.copies.submitted.inma.group.site.admin.assistant,model_copies_submitted,inma_group_site_admin_assistant,1,1,0,0
+access_copies_submitted_inma_group_user,access.copies.submitted.inma.group.user,model_copies_submitted,inma_group_user,1,1,1,0
+access_copies_submitted_inma_group_site_admin_assistant,access.copies.submitted.inma.group.site.admin.assistant,model_copies_submitted,inma_group_site_admin_assistant,1,1,1,0
 access_copies_submitted_inma_group_hr_manager,access.copies.submitted.inma.group.hr.manager,model_copies_submitted,inma_group_hr_manager,1,1,1,0
 access_copies_submitted_inma_group_project_assistant,access.copies.submitted.inma.group.project.assistant,model_copies_submitted,inma_group_project_assistant,1,1,1,0
 access_copies_submitted_inma_group_accounts_manager,access.copies.submitted.inma.group.accounts.manager,model_copies_submitted,inma_group_accounts_manager,1,1,1,0

@@ -79,7 +79,8 @@ class Employee(models.Model):
 	permanent_state_id = fields.Many2one('res.country.state', "State")
 	permanent_address_country_id = fields.Many2one('res.country', "Country")
 	original_certificate = fields.Selection([('yes', 'YES'), ('no','NO')], 'Original Certificate/ ID Submitted')
-	pf_details = fields.Char('PF/ESI Details')
+	pf_details = fields.Char('Previous PF/UAN No')
+	esi_details = fields.Char('Previous ESI Details')
 	insurance_details = fields.Char('Insurance Details')
 	undertaking = fields.Text('Undertaking')
 	hr_past_work_experience_id = fields.One2many('hr.past.work.experience', 'employee_id', 'Past Work Experience')
@@ -102,6 +103,12 @@ class Employee(models.Model):
 	work_base = fields.Selection([('day_basis','Day Basis'),('hour_basis','Hour Basis')],'Work Base')
 	category_id = fields.Many2one('hr.employee.category', 'Employee Category')
 	identity_no = fields.Char('Identification No', size=10)
+	salary_fixed = fields.Float('Salary Fixed')
+	engineers_appraisal = fields.Text('Engineers/Officer Appraisal')
+	interview_name = fields.Many2one('hr.employee', 'Interviewer Name')
+	date_of_interview = fields.Date('Date of Interview')
+	date_of_discontinuation = fields.Date('Date of Discontinuation')
+	reason_for_discontinuation = fields.Text('Reason for Discontinuation')
 	
 	_sql_constraints = [
         ('cid_uniq', 'unique(cid)', 'C ID should be unique'),
@@ -117,7 +124,7 @@ class Employee(models.Model):
 				month = int(join_date[1])
 				date = int(join_date[2])
 				experience = dateutil.relativedelta.relativedelta(till_day, datetime(year, month, date))
-				if experience.days == 7:
+				if experience.days == 5:
 					employee.expired_status = 'expired'
 					
 	@api.model
@@ -630,7 +637,7 @@ class card_name(models.Model):
 class other_items_issued(models.Model):
 	_name = "other.item.issued"
 	
-	name = fields.Char('Item name', size=20)
+	name = fields.Char('Item name', size=64)
 	
 	@api.model
 	def create(self,vals):

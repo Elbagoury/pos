@@ -5,6 +5,11 @@
 		<field name="type">form</field>
 		<field name="inherit_id" ref="hr.view_employee_form"/>
 		<field name="arch" type="xml">
+			<xpath expr="/form/sheet/div[2]"  position="before">
+				<div>
+				All Entries to be filled as per Aadhar Card details
+				</div>
+			</xpath>
             <xpath expr="//field[@name='category_ids']" position="replace">
 				<group>
 					 <group>
@@ -78,6 +83,7 @@
 			</field>
 			<field name="bank_account_id" position="after">
 				<field name="pf_details"/>
+				<field name="esi_details"/>
 				<field name="insurance_details"/>
 			</field>
 			
@@ -93,11 +99,17 @@
 					<field name="qualification_id" options='{"no_open": True}'/>
 					<field name="job_applied_id" options='{"no_open": True}'/>
 					<field name="job_appointed_id" options='{"no_open": True}'/>
+					<field name="interview_name"/>
 					<field name="date_of_interview"/>
 					<field name="expected_salary"/>
+					<field name="salary_fixed"/>
+					<field name="engineers_appraisal"/>
 					<field name="date_of_appointment" required="1"/>
 					<field name="expired_status" invisible="1"/>
 					<field name="experience"/>
+					
+					<field name="date_of_discontinuation" attrs = "{'invisible':[('active','=','False')]}"/>
+					<field name="reason_for_discontinuation" attrs = "{'invisible':[('active','=','True')]}"/>
 				</group>
             </xpath>
             
@@ -173,6 +185,7 @@
 						</field>
 					</group>
 			</xpath>
+			
 		</field>
 	</record>
 	
@@ -414,6 +427,9 @@
 			<field name="partner_ref" position="after">
 				<field name="srm_id" options='{"no_open": True, "no_create": True}' required="1"/>
 			</field>
+			<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="replace">
+				<field name="price_unit" attrs="{'readonly':True}"/>
+			</xpath>
 <!--
 			<field name="order_line" position="replace">
 				<field name="order_line" attrs="{'readonly': [('state', 'in', ('purchase', 'cancel'))]}"/>
@@ -458,15 +474,15 @@
 	</record>
 	
 	<record id="hr.view_department_tree" model="ir.ui.view">
-            <field name="name">hr.department.tree</field>
-            <field name="model">hr.department</field>
-            <field name="field_parent">child_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Companies">
-                    <field name="display_name"/>
-                </tree>
-            </field>
-        </record>
+        <field name="name">hr.department.tree</field>
+        <field name="model">hr.department</field>
+        <field name="field_parent">child_ids</field>
+        <field name="arch" type="xml">
+        	<tree string="Companies">
+                <field name="display_name"/>
+            </tree>
+    	</field>
+	</record>
         
     <record id="view_partner_property_form_inherit" model="ir.ui.view">
 		<field name="name">view.partner.property.form.inherit</field>
@@ -493,5 +509,17 @@
 		</field>
 	</record>
 	
+	<!--Purchase Order inherit for group permission -->
+	<record id="view_purchase_order_form_custom" model="ir.ui.view">
+		<field name="name">view.purchase.order.form.inherit</field>
+		<field name="model">purchase.order</field>
+		<field name="inherit_id" ref="inma.view_purchase_order_form_inherit"/>
+		<field name="groups_id" eval="[(6, 0, [ref('inma.inma_group_manager')])]"/>
+		<field name="arch" type="xml">
+			<xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">False</attribute>
+            </xpath>
+		</field>
+	</record>
 	
 </odoo>
