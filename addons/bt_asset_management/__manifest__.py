@@ -36,7 +36,8 @@
         'security/ir.model.access.csv',
         'views/asset_sequence.xml',
         'views/asset_view.xml',
-        'views/asset_move_view.xml'
+        'views/asset_move_view.xml',
+        'wizard/asset_report_view.xml',
              
              ],
     'installable': True,

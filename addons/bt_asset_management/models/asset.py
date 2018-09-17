@@ -24,6 +24,8 @@ from odoo.exceptions import ValidationError
 from odoo import tools
 from email import _name
 import string
+from datetime import datetime, date, time, timedelta
+
 
 class BtAsset(models.Model):   
     _name = "bt.asset"
@@ -53,7 +55,7 @@ class BtAsset(models.Model):
     note = fields.Text(string='Internal Notes')
     state = fields.Selection([
             ('active', 'Active'),
-            ('scrapped', 'Scrapped'), ('inactive','In Active')], string='State',track_visibility='onchange', default='active', copy=False)
+            ('scrapped', 'Scrapped'), ('inactive','In Active'),('repair','Under Repair'),('maintenance','Under Maintenance')], string='State',track_visibility='onchange', default='active', copy=False)
     image = fields.Binary("Image", attachment=True,
         help="This field holds the image used as image for the asset, limited to 1024x1024px.")
     image_medium = fields.Binary("Medium-sized image", attachment=True,
@@ -67,6 +69,7 @@ class BtAsset(models.Model):
     description = fields.Char('Description')
     is_vechile = fields.Boolean('Vechile')
     vechile_detail_ids = fields.One2many('vechile.details','asset_id','Vechile Status')
+    asset_log_ids = fields.One2many('asset.log','asset_log_id','Assets')
     
     @api.model
     def create(self, vals):
@@ -93,17 +96,40 @@ class BtAsset(models.Model):
                 'asset_id' : asset.id,
                 'to_loc_id' : location_obj.id
                 }
+            asset_log = [(0, 0, {'state_from': asset.state,'state_to': 'scrapped','user_id': asset._uid,'changed_on': datetime.now()})]
             asset_move = self.env['bt.asset.move'].create(move_vals)
             asset_move.action_move()
             asset.current_loc_id = location_obj.id
             asset.state = 'scrapped'
             if asset.state == 'scrapped':
                 asset.message_post(body=_("Scrapped"))
+			
+            asset.write({'asset_log_ids': asset_log})
+
         return True 
 
     @api.one
     def action_inactive(self):
-        self.state = "inactive"   
+        
+        asset_log = [(0, 0, {'state_from': self.state,'state_to': 'inactive','user_id': self._uid,'changed_on': datetime.now()})]
+        self.write({'state':'inactive','asset_log_ids':asset_log})
+
+    @api.one
+    def action_repair(self):
+        asset_log = [(0, 0, {'state_from': self.state,'state_to': 'repair','user_id': self._uid,'changed_on': datetime.now()})]
+        self.write({'state':"repair",'asset_log_ids':asset_log})
+        
+    @api.one
+    def action_maintenance(self):
+        
+        asset_log = [(0, 0, {'state_from': self.state,'state_to': 'maintenance','user_id': self._uid,'changed_on': datetime.now()})]
+        self.write({'state':"maintenance",'asset_log_ids':asset_log})
+
+    @api.one
+    def action_active(self):
+        
+        asset_log = [(0, 0, {'state_from': self.state,'state_to': 'active','user_id': self._uid,'changed_on': datetime.now()})]
+        self.write({'state':"active",'asset_log_ids':asset_log})  
 
 class BtAssetLocation(models.Model):   
     _name = "bt.asset.location"
@@ -157,5 +183,18 @@ class vechile_validation(models.Model):
     is_copy = fields.Boolean('Copy Available')
     copy_attach = fields.Binary('Attachment')
     vechile_detail_id = fields.Many2one('vechile.details','Vechile')
+
+
+class asset_log(models.Model):
+	_name = "asset.log"    
+	_description = 'Change Log'
+    
+	user_id = fields.Many2one('res.users', 'Changed By', readonly=True)
+	state_from = fields.Selection([('active', 'Active'),
+            ('scrapped', 'Scrapped'), ('inactive','In Active'),('repair','Under Repair'),('maintenance','Under Maintenance')], 'From', readonly=True)
+	state_to = fields.Selection([('active', 'Active'),
+            ('scrapped', 'Scrapped'), ('inactive','In Active'),('repair','Under Repair'),('maintenance','Under Maintenance')], 'To', readonly=True)
+	changed_on = fields.Datetime('Changed On', readonly=True)
+	asset_log_id = fields.Many2one('bt.asset', 'Change')
 
 # vim:expandtab:smartindent:tabstop=2:softtabstop=2:shiftwidth=2:  

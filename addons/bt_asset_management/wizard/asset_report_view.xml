@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_asset_report" model="ir.ui.view">
+        <field name="name">view.asset.report.form</field>
+        <field name="model">assert.report</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Asset Summary Report" create="false" edit="false" delete="false">
+				<group>
+					<group>	
+						<field name="location"/>
+					</group>
+					<group>	
+						<field name="state"/>
+					</group>
+				</group>
+
+                <notebook>
+                	<page string="Asset">
+						<field name="asset_ids">
+							<tree create="false" edit="false" delete="false">	
+								<field name="date"/>
+								<field name="name"/>
+                				<field name="model_name"/>
+                			</tree> 
+						</field>
+                	</page>                	
+                </notebook>
+				<footer>
+                   	<button string="Cancel" class="oe_link" special="cancel"/>                        	
+               	</footer>                	
+            </form>
+        </field>
+    </record>
+
+    <record id="action_asset_report" model="ir.actions.act_window">
+        <field name="name">Asset Summary</field>
+        <field name="res_model">assert.report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">new</field>            
+        <field name="view_id" ref="view_asset_report"/>
+    </record>
+
+    <menuitem action="action_asset_report" id="menu_asset_report"
+            parent="asset_managment_main_submenu" sequence="15"/>
+</odoo>

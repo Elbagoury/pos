@@ -118,7 +118,7 @@
             <field name="arch" type="xml">
                 <form string="Asset">
                 	<header>
-                		<field name="state" widget="statusbar"  statusbar_visible="active,scrapped,inactive"/>
+                		<field name="state" widget="statusbar"  statusbar_visible="active,scrapped,inactive,repair,maintenance"/>
                 	</header>
                 	<sheet>
                 		<field name="image_medium" widget="image" class="oe_avatar"/>
@@ -127,8 +127,11 @@
                                 	<label for="name" string="Asset Name"/>
                             	</div>
                             	<div class="oe_right oe_button_box">
+									<button name= "action_active" string="Active" type="object" class="btn-primary" />
 									<button name= "action_move_vals" string="Scrap" type="object" class="btn-primary" />
 									<button name= "action_inactive" string="In Active" type="object" class="btn-primary" />
+									<button name= "action_repair" string="Under Repair" type="object" class="btn-primary" />
+									<button name= "action_maintenance" string="Under Maintenance" type="object" class="btn-primary" />
 								</div>
                             	<h1>
                                 	<field name="name"/>
@@ -192,6 +195,16 @@
 												</field>
 											</page>
 										</form>
+									</field>
+								</page>
+								<page string="Change log">
+									<field name="asset_log_ids" readonly="1">
+										<tree>
+											<field name="user_id"/>
+ 	                  						<field name="state_from"/>
+ 	                  						<field name="state_to"/>
+ 	                  						<field name="changed_on"/>
+										</tree>
 									</field>
 								</page>
 	                        </notebook> 

@@ -39,7 +39,7 @@ class BtAssetMove(models.Model):
     date = fields.Date("Date", default = fields.Date.context_today)
     dc_no = fields.Char('DC Number')
     dc_attach = fields.Binary('DC Upload')
-    nature_of_movement = fields.Char('Nature of Movement')
+    nature_of_movement = fields.Selection([('return','Returnable'),('non_return','Non-Returnable')],'Nature of Movement')
     
     @api.model
     def create(self, vals):
