@@ -803,7 +803,7 @@ class PurchaseOrder(models.Model):
 	_inherit = 'purchase.order'
 	
 	rfq_no = fields.Char('RFQ No')
-	srm_id = fields.Many2one('stock.requirement.memo','SRM No')
+	srm_id = fields.Many2many('stock.requirement.memo','srm_purchase_rel','srm_id','purchase_id','SRM No')
 	
 	@api.model
 	def create(self,vals):

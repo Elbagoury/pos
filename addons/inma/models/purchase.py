@@ -11,7 +11,7 @@ class stock_picking(models.Model):
 	delivery_number = fields.Char('Delivery Challan Number')
 	quality_remarks = fields.Text('Quality Remarks')
 	invoice_no = fields.Char('Invoice Number')
-	srm_no = fields.Many2one('stock.requirement.memo','SRM No')
+	srm_no = fields.Many2many('stock.requirement.memo', 'srm_stock_rel','srm_id','stock_id','SRM No')
 	
 class PackOperation(models.Model):
 	_inherit = "stock.pack.operation"
@@ -108,7 +108,6 @@ class PurchaseOrderLine(models.Model):
 			if self.product_qty < 0:
 				raise ValidationError(_("Quantity Should be greater than zero"))
 				
-				
 	@api.onchange('order_id.partner_id', 'product_id')
 	def onchange_product_partner_id(self):
 	   domain ={}
@@ -194,7 +193,7 @@ class MrpBom(models.Model):
 class AccountInvoice(models.Model):
 	_inherit = 'account.invoice'
 	
-	srm_no = fields.Many2one('stock.requirement.memo','SRM No')
+	srm_no = fields.Many2many('stock.requirement.memo','srm_account_rel','srm_id','account_id','SRM No')
 	
 class account_payment(models.Model):
 	_inherit = 'account.payment'

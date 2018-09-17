@@ -26,6 +26,7 @@
 								<field name="employee_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
 								<field name="id_no" readonly="1"/>
 								<field name="category_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
+								<field name="job_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
 								<field name="day_shift" attrs="{'readonly': [('shift', '=', 'night')]}"/>
 								<field name="night_shift" attrs="{'readonly': [('shift', '=', 'day')]}"/>
 								<field name="job_allocation"/>
@@ -96,6 +97,7 @@
 								<field name="employee_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
 								<field name="id_no" readonly="1"/>
 								<field name="category_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
+								<field name="job_id" options='{"no_open": True, "no_create": True}' readonly="1"/>
 								<field name="forenoon_start_time" widget="float_time"/>
 								<field name="forenoon_end_time" widget="float_time"/>
 								<field name="afnoon_start_time" widget="float_time"/>

@@ -12,7 +12,7 @@
 			</field>
 			<field name="origin" position="after">
 				<field name="quality_remarks"/>
-				<field name="srm_no"/>
+				<field name="srm_no" widget="many2many_tags" options='{"no_open": True, "no_create": True}'/>
 			</field>
 			<xpath expr="/form/sheet/notebook/page/field[@name='pack_operation_product_ids']/tree/field[@name='qty_done']" position="after">
 				<field name="remarks"/>
@@ -56,7 +56,7 @@
        <field name="inherit_id" ref="account.invoice_supplier_form"/>
        <field name="arch" type="xml">
 		   <field name="reference" position="after">
-			   <field name="srm_no"/>
+			   <field name="srm_no" widget="many2many_tags" options='{"no_open": True, "no_create": True}'/>
 		   </field>
        </field>
 	</record>

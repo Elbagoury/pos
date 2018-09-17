@@ -29,14 +29,17 @@ class production_summary_report(models.TransientModel):
 	production_summary_ids = fields.One2many('production.summary.line', 'production_summary_id', 'Product Summary')
 	file_f = fields.Binary("File", readonly=True)	
 	file_name = fields.Char("File Name",size=128, readonly=True)
+	filter_by = fields.Selection([('date','Datewise'),('mould','Mouldwise')], 'Filter By')
+	mould_id = fields.Many2one("mould.master","Mould ID")
 	
-	@api.onchange('date_from','date_to')
+	@api.onchange('date_from','date_to','filter_by','mould_id')
 	def onchange_date(self):
-		if self:
-			production_dict = {}
-			production_list = []
-			cumalative_left = 0
-			cumalative_right = 0
+		production_dict = {}
+		production_list = []
+		cumalative_left = 0
+		cumalative_right = 0
+		if self.filter_by == 'date':
+			
 			pre_production_ids = self.env['production.testing.line'].search([('date','<',self.date_from)])
 			if pre_production_ids:
 				for pre_production in pre_production_ids:
@@ -56,7 +59,19 @@ class production_summary_report(models.TransientModel):
 					
 					production_list.append((0,0,{'rfi_no':production.rfi_no,'date':production.date, 'mould_id':production.mould_id.id,'ring_id_left':'-','ring_id_right':production.ring_id,'ring_produced_left': 0,'ring_produced_right':1,'cumalative_count_left': cumalative_left,'cumalative_count_right': cumalative_right,'mf_date':production.date,'approved_date':production.approved_date,'dispatched_date':production.dispatched_date,'permanent_ring':production.permanent_ring,'temporary_ring':production.temporary_ring,'approved_ring':production.approved_ring,'dispatched_ring':production.dispatched_ring}))
 					
-			self.production_summary_ids = production_list
+			
+		elif self.filter_by == 'mould':
+			production_ids = self.env['production.testing.line'].search([('mould_id','=',self.mould_id.id)], order='date asc')
+			for production in production_ids:
+				if production.mould_id.mould_type == 'l':
+					cumalative_left += 1
+					production_list.append((0,0,{'rfi_no':production.rfi_no,'date':production.date, 'mould_id':production.mould_id.id,'ring_id_left':production.ring_id,'ring_id_right':'-','ring_produced_left': 1,'ring_produced_right':0,'cumalative_count_left':cumalative_left,'cumalative_count_right':cumalative_right,'mf_date':production.date,'approved_date':production.approved_date,'dispatched_date':production.dispatched_date,'permanent_ring':production.permanent_ring,'temporary_ring':production.temporary_ring,'approved_ring':production.approved_ring,'dispatched_ring':production.dispatched_ring}))
+				elif production.mould_id.mould_type == 'r':
+					cumalative_right += 1
+					
+					production_list.append((0,0,{'rfi_no':production.rfi_no,'date':production.date, 'mould_id':production.mould_id.id,'ring_id_left':'-','ring_id_right':production.ring_id,'ring_produced_left': 0,'ring_produced_right':1,'cumalative_count_left': cumalative_left,'cumalative_count_right': cumalative_right,'mf_date':production.date,'approved_date':production.approved_date,'dispatched_date':production.dispatched_date,'permanent_ring':production.permanent_ring,'temporary_ring':production.temporary_ring,'approved_ring':production.approved_ring,'dispatched_ring':production.dispatched_ring}))
+		
+		self.production_summary_ids = production_list
 			
 	@api.multi
 	def print_report(self):
@@ -83,9 +98,7 @@ class production_summary_report(models.TransientModel):
 			pat2.pattern = xlwt.Pattern.SOLID_PATTERN
 			pat2.pattern_fore_colour = xlwt.Style.colour_map['light_turquoise']
 			style_header.pattern = pat2 
-			
-			
-		
+					
 			style_center_align = XFStyle()
 			fnt1 = Font()
 			fnt1.height = 11*0x14

@@ -26,13 +26,13 @@ class employee_attendance(models.Model):
 			employees_dict = []
 			if self.shift == 'day':
 				for employee in employees:
-						employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id, 'shift':self.shift, 'day_shift':True}))
+						employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id, 'job_id':employee.job_id.id, 'shift':self.shift, 'day_shift':True}))
 			elif self.shift == 'night':
 				for employee in employees:
-						employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id, 'shift':self.shift, 'night_shift':True}))
+						employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id, 'job_id':employee.job_id.id, 'shift':self.shift, 'night_shift':True}))
 			elif self.shift == 'day_night':
 				for employee in employees:
-						employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id, 'shift':self.shift, 'day_shift':True, 'night_shift':True}))
+						employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id, 'job_id':employee.job_id.id, 'shift':self.shift, 'day_shift':True, 'night_shift':True}))
 
 			self.employee_attendance_line_ids = employees_dict
 
@@ -63,6 +63,7 @@ class employee_attendance_line(models.Model):
 	shift = fields.Selection([('day','Day'),('night','Night'),('day_night','Day/Night')],'Shift')
 	job_allocation = fields.Char('Job Allocation')
 	employee_attendance_id = fields.Many2one('employee.attendance','Employee Attendance')
+	job_id = fields.Many2one('hr.job','Desgination')
 
 class workbase_employee(models.Model):
 	_name = 'workbase.employee'
@@ -84,7 +85,7 @@ class workbase_employee(models.Model):
 				employees = self.env['hr.employee'].search([('work_base','=','hour_basis')], order='name asc')
 				employees_dict = []
 				for employee in employees:
-					employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id}))
+					employees_dict.append((0, 0, {'employee_id': employee.id, 'id_no': employee.cid, 'category_id':employee.category_id.id,'job_id':employee.job_id.id}))
 				self.workbase_employee_line_ids = employees_dict
 
 	@api.constrains('date')
@@ -128,6 +129,7 @@ class workbase_employee_line(models.Model):
 	total_hours = fields.Float('Total Hours')
 	remarks = fields.Text('Remarks')
 	workbase_employee_id = fields.Many2one('workbase.employee','Work Base Employee')
+	job_id = fields.Many2one('hr.job','Desgination')
 
 	@api.onchange('forenoon_start_time','forenoon_end_time','afnoon_start_time','afnoon_end_time','extra_hours')
 	def onchange_time(self):
