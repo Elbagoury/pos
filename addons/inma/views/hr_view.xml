@@ -120,19 +120,7 @@
 						<field name="date_of_interview"/>
 					</group>
 				</group>
-				<group string="Medical Records">\
-					<group string="Office Use">
-					<group>
-						<field name="job_appointed_id" options='{"no_open": True}'/>
-						<field name="id_card" attrs="{'required':[('expired_status','=', 'expired')], 'invisible':[('expired_status','not in', ('expired','valid'))]}"/>
-						<field name="engineers_appraisal"/>
-					</group>
-					<group>
-						<field name="salary_fixed"/>
-						<field name="interview_name"/>
-						<field name="date_of_interview"/>
-					</group>
-				</group>
+				<group string="Medical Records">
 					<group>
 						<field name="height" placeholder="in cm - Mandatory" required="1"/> 
 						<field name="weight" placeholder="in  kgs - Mandatory" required="1"/>
