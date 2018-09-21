@@ -8,10 +8,11 @@
             <form string="Asset Summary Report" create="false" edit="false" delete="false">
 				<group>
 					<group>	
-						<field name="location"/>
+						<field name="filter_by"/>
+						<field name="location" options='{"no_open": True,"no_create": True}'/>
 					</group>
 					<group>	
-						<field name="state"/>
+						<field name="state" attrs="{'invisible':[('filter_by','!=','state')]}"/>
 					</group>
 				</group>
 
@@ -27,6 +28,7 @@
                 	</page>                	
                 </notebook>
 				<footer>
+					<button name="print_report" string="Print" class="oe_highlight" type="object"/> 
                    	<button string="Cancel" class="oe_link" special="cancel"/>                        	
                	</footer>                	
             </form>

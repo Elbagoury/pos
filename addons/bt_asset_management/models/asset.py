@@ -177,7 +177,7 @@ class vechile_details(models.Model):
 class vechile_validation(models.Model):
     _name = "vechile.validation"
 
-    vechile_valid = fields.Selection([('registration','Registration'),('insurance','Insurance'),('permit','Permit'),('fitness','Fitness'),('road_tax','Road Tax'),('pollution','Pollution'),('others','Others')],'Vechile Validity')
+    vechile_valid = fields.Selection([('registration','Registration'),('insurance','Insurance'),('permit','Permit'),('fitness','Fitness'),('road_tax','Road Tax'),('pollution','Pollution'),('others','Others')],'Vechile Document')
     valid_from = fields.Date('Valid From')
     valid_to = fields.Date('Valid To')
     is_copy = fields.Boolean('Copy Available')

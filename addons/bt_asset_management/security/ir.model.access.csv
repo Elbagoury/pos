@@ -3,3 +3,6 @@ access_bt_asset,bt.asset,model_bt_asset,bt_asset_management.group_asset_manageme
 access_bt_asset_move,bt.asset.move,model_bt_asset_move,bt_asset_management.group_asset_management_user,1,1,1,0
 access_bt_asset_location,bt.asset.location,model_bt_asset_location,bt_asset_management.group_asset_management_user,1,1,1,0
 access_bt_asset_category,bt.asset.category,model_bt_asset_category,bt_asset_management.group_asset_management_user,1,1,1,0
+access_vechile_details,vechile.details,model_vechile_details,bt_asset_management.group_asset_management_user,1,1,1,0
+access_vechile_validation,vechile.validation,model_vechile_validation,bt_asset_management.group_asset_management_user,1,1,1,0
+access_asset_log,asset.log,model_asset_log,bt_asset_management.group_asset_management_user,1,0,0,0

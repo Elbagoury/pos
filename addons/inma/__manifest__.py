@@ -64,6 +64,7 @@ You can manage:
 	'data/mail_template_data.xml',
 	'report/report_invoice.xml',
     'wizard/lot_serial_view.xml',
+    'report/employee_office_use_report.xml',
     ],
     'demo': [
         'data/hr_demo.xml'

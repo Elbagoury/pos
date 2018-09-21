@@ -20,6 +20,7 @@
                 	<field name="asset_id"/>
                 	<field name="to_loc_id"/>
                 	<field name="state"/>
+					<field name="nature_of_movement"/>
                 </tree>
             </field>
         </record>
