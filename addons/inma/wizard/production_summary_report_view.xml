@@ -42,7 +42,7 @@
                 		</page>                	
                 	</notebook>
 						<footer>
-							<button name="print_report" string="Print" class="oe_highlight" type="object" attrs="{'invisible':[('filter_by','=','mould')]}"/>    
+							<button name="print_report" string="Print" class="oe_highlight" type="object"/>    
                         	<button string="Cancel" class="oe_link" special="cancel"/>                        	
                     	</footer>                	
                </form>

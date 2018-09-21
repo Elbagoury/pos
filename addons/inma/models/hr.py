@@ -96,7 +96,8 @@ class Employee(models.Model):
 	original_document_attach = fields.Binary('Original Document Attachment')
 	copies_submitted_ids = fields.One2many('copies.submitted', 'employee_id', 'Copies Submitted')
 	accomodation_allot = fields.Char(' Details of Accomodation Alloted')
-	id_card = fields.Char('ID card & Validity')
+	id_card = fields.Char('ID card')
+	id_valid = fields.Integer('ID Card Validity')
 	item_issued_ids = fields.Many2many('other.item.issued','employee_other_item_issued_detail','employee_id','other_item_issue_id', 'Detail of other item issued')
 	expired_status = fields.Char('Expired Status')
 	same_as_address = fields.Boolean('Same as Present Address')
@@ -109,6 +110,9 @@ class Employee(models.Model):
 	date_of_interview = fields.Date('Date of Interview')
 	date_of_discontinuation = fields.Date('Date of Discontinuation')
 	reason_for_discontinuation = fields.Text('Reason for Discontinuation')
+	jacket = fields.Selection([('yes','Yes'),('no','No')],'Jacket')
+	helmet = fields.Selection([('yes','Yes'),('no','No')],'Helmet')
+	shoes = fields.Selection([('yes','Yes'),('no','No')],'Shoes')
 	
 	_sql_constraints = [
         ('cid_uniq', 'unique(cid)', 'C ID should be unique'),
@@ -126,6 +130,8 @@ class Employee(models.Model):
 				experience = dateutil.relativedelta.relativedelta(till_day, datetime(year, month, date))
 				if experience.days == 5:
 					employee.expired_status = 'expired'
+				if experience.months == employee.id_valid and experience.days == 0:
+					employee.expired_status = 'month_expired'
 					
 	@api.model
 	def _needaction_domain_get(self):

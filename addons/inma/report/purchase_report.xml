@@ -49,6 +49,18 @@
             file="inma.report_invoice"
 	    menu="True"
         />
+
+        <report 
+            string="Office Use" 
+            id="report_inma_employee_office_use" 
+            model="hr.employee" 
+            report_type="qweb-pdf"
+            name="inma.report_employee_officeuse" 
+            file="inma.report_employee_officeuse"
+	    menu="True"
+        />
+
+        
 </odoo>
 
 

@@ -98,23 +98,41 @@
 				<group string="Job Details">
 					<field name="qualification_id" options='{"no_open": True}'/>
 					<field name="job_applied_id" options='{"no_open": True}'/>
-					<field name="job_appointed_id" options='{"no_open": True}'/>
-					<field name="interview_name"/>
-					<field name="date_of_interview"/>
 					<field name="expected_salary"/>
-					<field name="salary_fixed"/>
-					<field name="engineers_appraisal"/>
 					<field name="date_of_appointment" required="1"/>
 					<field name="expired_status" invisible="1"/>
 					<field name="experience"/>
-					
 					<field name="date_of_discontinuation"/>
 					<field name="reason_for_discontinuation"/>
 				</group>
             </xpath>
             
 			<xpath expr="/form/sheet/notebook/page[2]">
-				<group string="Medical Records">
+				<group string="Office Use">
+					<group>
+						<field name="job_appointed_id" options='{"no_open": True}'/>
+						<field name="id_card" attrs="{'required':[('expired_status','=', 'expired')], 'invisible':[('expired_status','not in', ('expired','valid'))]}"/>
+						<field name="engineers_appraisal"/>
+					</group>
+					<group>
+						<field name="salary_fixed"/>
+						<field name="interview_name"/>
+						<field name="date_of_interview"/>
+					</group>
+				</group>
+				<group string="Medical Records">\
+					<group string="Office Use">
+					<group>
+						<field name="job_appointed_id" options='{"no_open": True}'/>
+						<field name="id_card" attrs="{'required':[('expired_status','=', 'expired')], 'invisible':[('expired_status','not in', ('expired','valid'))]}"/>
+						<field name="engineers_appraisal"/>
+					</group>
+					<group>
+						<field name="salary_fixed"/>
+						<field name="interview_name"/>
+						<field name="date_of_interview"/>
+					</group>
+				</group>
 					<group>
 						<field name="height" placeholder="in cm - Mandatory" required="1"/> 
 						<field name="weight" placeholder="in  kgs - Mandatory" required="1"/>
@@ -172,8 +190,14 @@
 							<field name="original_document"/>
 							<field name="original_document_attach" attrs="{'invisible': [('original_document','!=', True)]}"/>
 							<field name="accomodation_allot"/>
-							<field name="id_card" attrs="{'required':[('expired_status','=', 'expired')], 'invisible':[('expired_status','not in', ('expired','valid'))]}"/>
+							<field name="id_card" attrs="{'required':[('expired_status','in', ('expired','month_expired'))], 'invisible':[('expired_status','not in', ('expired','valid','month_expired'))]}"/>
+							<field name="id_valid"/>
 							<field name="item_issued_ids" widget="many2many_tags"/>
+						</group>
+						<group string="Details of Item Issued">
+							<field name="jacket" widget="radio"/>
+							<field name="helmet" widget="radio"/>
+							<field name="shoes" widget="radio"/>
 						</group>
 					</group>
 					<group>
@@ -302,7 +326,7 @@
             <field name="res_model">hr.employee</field>
             <field name="view_type">form</field>
             <field name="limit">20</field>
-            <field name="domain">[('expired_status','=','expired')]</field>
+            <field name="domain">[('expired_status','in',('expired','month_expired'))]</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_expired_employee_tree"/>   
         </record>

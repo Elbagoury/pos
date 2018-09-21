@@ -546,6 +546,9 @@ class="oe_highlight"/>
 			<field name="product_id" position="before">
 				<field name="shift_id" options='{"no_open": True,"no_create": True}' required="1"/>
 			</field>
+			<xpath expr="/form/sheet/notebook/page/field[@name='move_raw_ids']/tree/button[@name='split_move_lot']" position="after">
+				<field name="state"/>
+			</xpath>
 		</field>
 	</record>
 	
